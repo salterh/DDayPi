@@ -1,5 +1,5 @@
 # DDayPi
 
-##TODO 
+## TODO 
 
-- [] Bash script to setup Pi's with sound library & PD etc @spearse
+- [ ] Bash script to setup Pi's with sound library & PD etc @spearse
