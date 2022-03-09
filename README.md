@@ -13,6 +13,25 @@
 - [ ] Startup script - needs to differentiate between main & subsidiary /server client
 
 
-## OSC Message Structure
-### Input
-/address | Team Number/Name | Information
+### OSC Message Structure
+
+/Address | Team Number/Name | Information
+
+### OSC Message Glossary
+#### Addresses
+##### Top Level Addresses
+
+- /All (For information every Pi needs to know)
+- /Main (For information the main Pi needs to know)
+- /Subs (For information every Pi *but* the main Pi needs to know)
+
+##### Lower Level Addresses
+
+- /Answer (For information regarding the guessing of answers)
+- /Help (Alerts the system that a certain team needs a member of staff)
+- /Hint (Gives the team a hint)
+
+#### Team Number/Name
+
+#### Information
+
