@@ -15,4 +15,4 @@
 
 ## OSC Message Structure
 ### Input
-</address> <Team Number/Name> <Information>
+/address | Team Number/Name | Information
