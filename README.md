@@ -44,7 +44,7 @@ An interactive timeloop soundscape which presents aural opportunities for partic
 This depends on the amount of teams present at once, and whether or not the naming of teams is allows.
 
 #### Information
-*This is the information given by the participants. Below is a list of possible inputs to consider*
+*This is the information given by the participants. Below is a list of possible inputs to consider.*
 
 - Morse Code (physical machine/lights/sound).
 - Typewriter
