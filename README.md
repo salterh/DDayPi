@@ -13,5 +13,6 @@
 - [ ] Startup script - needs to differentiate between main & subsidiary /server client
 
 
-
-
+## OSC Message Structure
+### Input
+- /<address> <Team Number/Name> <Information>
