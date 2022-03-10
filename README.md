@@ -7,11 +7,11 @@ An interactive timeloop soundscape which presents aural opportunities for partic
 ## TODO 
 
 - [ ] Bash script to setup Pi's with sound library & PD etc @spearse
-- [ ] Setup OSC Message glossary/terms
-- [ ] Settle on OSC networking structure
-- [ ] Setup OSC in PD
+- [x] Setup OSC Message glossary/terms
+- [x] Settle on OSC networking structure
+- [x] Setup OSC in PD
 - [ ] Bash script for setting up WIFI broadcasting @spearse
-- [ ] Basic sound playback 
+- [x] Basic sound playback 
 - [ ] Sound playback with or without fading
 - [ ] Compostional structure & layering
 - [ ] \(optional) Settle on DSP tools/effects?
