@@ -2,7 +2,7 @@
 
 ## Spec 
 
-An interactive timeloop soundscape which presents aural opportunities for participants to find clues and answer questions in interesting ways. Participants should listen closely to audio clues to answer questions which change the soundscape. The soundscape will evolve to fit into the narrative of the ship itself; DDay -> Nightclub -> Salvage -> Sinking (repeat infinitely, or until the timeloop is broken). 
+An interactive timeloop soundscape which presents aural opportunities for participants to find clues and answer questions in interesting ways. Participants should listen closely to audio clues to answer questions which change the soundscape. The soundscape will evolve to fit into the narrative of the ship itself; DDay -> Nightclub (repeat infinitely, or until the timeloop is broken). 
 
 ## TODO 
 
