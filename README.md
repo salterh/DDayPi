@@ -43,4 +43,9 @@ An interactive timeloop soundscape which presents aural opportunities for partic
 - reacTIVision
 - LEAP Motion
 
+#### Examples
+
+/All/Answer/1/"France"
+/Self/Hint/1/"bang"
+/Subs/Help/2/""
 
