@@ -1,0 +1,27 @@
+#N canvas 651 159 786 442 12;
+#X obj 272 95 hradio 15 1 0 10 empty empty empty 0 -8 0 10 -262144
+-1 -1 7;
+#X floatatom 272 115 5 0 0 0 - - -;
+#X msg 442 112 clear;
+#X obj 9 10 loadbang;
+#X obj 9 62 soundfiler;
+#X msg 9 35 read -resize phone.wav phone;
+#N canvas 0 50 450 250 (subpatch) 0;
+#X array phone 1.31917e+06 float 2;
+#X coords 0 1 1.31917e+06 -1 200 140 1;
+#X restore 9 107 graph;
+#X obj 272 209 tabplay~ phone;
+#X obj 272 235 *~ 0.8;
+#X obj 271 279 dac~;
+#X obj 272 183 js phoneInput.js;
+#X msg 449 182 stop;
+#X connect 0 0 1 0;
+#X connect 1 0 10 0;
+#X connect 2 0 10 0;
+#X connect 3 0 5 0;
+#X connect 5 0 4 0;
+#X connect 7 0 8 0;
+#X connect 8 0 9 0;
+#X connect 8 0 9 1;
+#X connect 10 0 7 0;
+#X connect 11 0 7 0;
