@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <div>Teachable Machine Pose Model</div>
+    <button type="button" onclick="init()">Start</button>
+    <div><canvas id="canvas"></canvas></div>
+    <div id="label-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.38/Tone.js"></script>
+    <!--This line is how we access the tonejs library-->
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
+        // the link to your model provided by Teachable Machine export panel 
+
+        //Needs updating!
+        const URL = "https://teachablemachine.withgoogle.com/models/MDYJWR2mg/";
+        let model, webcam, ctx, labelContainer, maxPredictions;
+
+        var correctSamples = [], incorrectSamples = [], dialogueSamples = [];
+        var finalSample, testSample;
+        var newPrediction, oldPrediction;
+        var checkTimer, randomTimer;
+        var playerAnswer = [];
+        var checkCounter = 0, correctCounter = -1;
+        var isComplete = false;
+
+        //Needs updating!
+        var correctAnswer = [0, 0, 0, 0, 0, 0];
+
+        //init();
+
+
+        async function init() {
+
+            // LOADING SAMPLES
+            for (let i = 0; i < 6; i++) {
+                correctSamples[i] = new Tone.Player("./Sounds/correctSample" + i + ".wav").toDestination();
+                correctSamples[i].volume.value = 0;
+                // incorrectSamples[i] = new Tone.Player("./incorrectSample" + i + ".wav").toDestination();    
+            }
+
+            for (let i = 0; i < 4; i++) {
+                dialogueSamples[i] = new Tone.Player("./Sounds/sfx_disco_dialog" + i + ".wav").toDestination();
+                dialogueSamples[i].volume.value = -3;
+            }
+
+            bkgSoundscape = new Tone.Player("./Sounds/BarChatter.wav").toDestination();
+            bkgSoundscape.volume.value = -6;
+            bkgSoundscape.loop = true;
+            bkgSoundscape.autostart = true;
+            finalSample = new Tone.Player("./Sounds/DiscoBarMan.wav").toDestination();
+
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // load the model and metadata
+            // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+            // Note: the pose library adds a tmPose object to your window (window.tmPose)
+            model = await tmPose.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Convenience function to setup a webcam
+            const size = 200;
+            const flip = true; // whether to flip the webcam
+            webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
+            await webcam.setup(); // request access to the webcam
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            // append/get elements to the DOM
+            const canvas = document.getElementById("canvas");
+            canvas.width = size; canvas.height = size;
+            ctx = canvas.getContext("2d");
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+            }
+            checkTimer = setInterval(checkChange, 500);
+            randomTimer = setTimeout(randomPlaySound, Math.floor((Math.random() * 10000) + 5000));
+        }
+
+        function checkChange() {
+            if (newPrediction !== oldPrediction) {
+                checkCounter = 0;
+            }
+            else {
+                checkCounter++;
+                if (checkCounter > 3) {
+                    playerAnswer.push(parseInt(newPrediction));
+                    if (playerAnswer[playerAnswer.length - 1] == correctAnswer[playerAnswer.length - 1]) {
+                        //Play a sample if they get the answer right
+                        correctCounter++;
+                        correctSamples[correctCounter].start();
+                    }
+                    else {
+                        //Play a sample if they get the answer wrong
+                        // incorrectSamples[playerAnswer.length - 1].start();
+                    }
+
+                    if (playerAnswer.length == correctAnswer.length)
+                        if (JSON.stringify(playerAnswer) == JSON.stringify(correctAnswer)) {
+                            isComplete = true;
+                            console.log("Well done!");
+                            bkgSoundscape.volume.rampTo(-15, 1);
+                            finalSample.start("+1s");
+                            finalSample.onstop = () => {
+                                console.log("Restarting...");
+                                bkgSoundscape.volume.rampTo(-6, 1);
+                                checkTimer = setInterval(checkChange, 500);
+                                isComplete = false;
+                            };
+                            playerAnswer = [];
+                            correctCounter = -1;
+                            clearInterval(checkTimer);
+                        }
+                        else {
+                            playerAnswer = [];
+                            console.log("Try again!");
+                            correctCounter = -1;
+                        }
+                    checkCounter = 0;
+                }
+            }
+            oldPrediction = newPrediction;
+            console.log(checkCounter, correctCounter, isComplete);
+        }
+
+        function randomPlaySound() {
+            console.log("Playing Doug");
+            if (finalSample.state != "started" && !isComplete && correctCounter < 2) {
+                var randomNumber = Math.floor((Math.random() * 100) + 1);
+                var randomSound = Math.floor((Math.random() * 4));
+
+                if (randomNumber < 100) {
+                    dialogueSamples[randomSound].start();
+                }
+            }
+            setTimeout(randomPlaySound, Math.floor((Math.random() * 10000) + 5000));
+        }
+
+        async function loop(timestamp) {
+            webcam.update(); // update the webcam frame
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            // Prediction #1: run input through posenet
+            // estimatePose can take in an image, video or canvas html element
+            const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+            // Prediction 2: run input through teachable machine classification model
+            const prediction = await model.predict(posenetOutput);
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+
+            }
+            newPrediction = Object.keys(prediction).reduce(function (a, b) {
+                return (parseFloat(prediction[a].probability.toFixed(2)) > parseFloat(prediction[b].probability.toFixed(2)) ? a : b);
+            });
+
+            // finally draw the poses
+            drawPose(pose);
+        }
+
+        function drawPose(pose) {
+            if (webcam.canvas) {
+                ctx.drawImage(webcam.canvas, 0, 0);
+                // draw the keypoints and skeleton
+                if (pose) {
+                    const minPartConfidence = 0.5;
+                    tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
+                    tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>
