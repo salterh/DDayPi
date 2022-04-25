@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <script src="./lib/osc.min.js"></script>
+    <script src="./lib/Tone.js"></script>
+    <script type="text/javascript">
+
+        var osc = new OSC({
+            plugin: new OSC.WebsocketClientPlugin({ port: 9912 })
+        });
+        osc.open();
+
+        var baseLayers = [], baseLayerCount = 4;
+        var oneShots = [], oneShotPool = [], oneShotCount = 4;
+        var chance = 10;
+        var time = 2000;
+
+        preload();
+
+        function preload() {
+            for (let i = 0; i < baseLayerCount; i++) {
+                baseLayers[i] = new Tone.Player("./Audio/amb_LandingBay_Baselayer_" + i + ".wav").toDestination();
+                baseLayers[i].loop = true;
+                baseLayers[i].volume.value = -3;
+            }
+            for (let i = 0; i < oneShotCount; i++) {
+                oneShots[i] = new Tone.Player("./Audio/sfx_LandingBay_Oneshot_" + i + ".wav").toDestination();
+                oneShots[i].volume.value = -3;
+            }
+            oneShotPool = [...oneShots];
+            Tone.loaded().then(() => {
+                for (let i = 0; i < baseLayers.length; i++)
+                    baseLayers[i].start();
+                setTimeout(playRandomSound, time);
+            });
+        }
+        function playRandomSound() {
+            if (oneShotPool.length > 0)
+                if (Math.random() * 100 < chance) {
+                    let randomIndex = Math.floor(Math.random(oneShotPool.length));
+                    oneShotPool[randomIndex].start();
+                    oneShotPool.splice(randomIndex, 1);
+                }
+                else
+                    oneShotPool = [...oneShots];
+            // var message = new OSC.Message("/test/random", Math.random());
+            // osc.send(message);
+            setTimeout(playRandomSound, time);
+        }
+    </script>
+</body>
+
+</html>
