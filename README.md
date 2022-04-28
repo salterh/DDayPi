@@ -2,21 +2,17 @@
 
 ## Spec 
 
-An interactive timeloop soundscape which presents aural opportunities for participants to find clues and answer questions in interesting ways. Participants should listen closely to audio clues to answer questions which change the soundscape. The soundscape will evolve to fit into the narrative of the ship itself; DDay -> Nightclub (repeat infinitely, or until the timeloop is broken). 
+An interactive timeloop soundscape which presents aural opportunities for participants to find clues and answer questions in interesting ways. Participants should listen closely to audio clues and pay attention to their surroundings to answer questions which meaningfully change the soundscape.
 
 ## TODO 
 
-- [ ] Bash script to setup Pi's with sound library & PD etc @spearse
+- [ ] Bash script to setup Pi's with sound library @spearse
 - [x] Setup OSC Message glossary/terms
 - [x] Settle on OSC networking structure
-- [x] Setup OSC in PD
 - [ ] Bash script for setting up WIFI broadcasting @spearse
 - [x] Basic sound playback 
-- [ ] Sound playback with or without fading
+- [x] Sound playback with or without fading
 - [ ] Compostional structure & layering
-- [ ] \(optional) Settle on DSP tools/effects?
-- [ ] Startup script - needs to differentiate between main & subsidiary /server client
-
 
 ### OSC Message Structure
 

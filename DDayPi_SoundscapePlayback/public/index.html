@@ -6,14 +6,8 @@
 </head>
 
 <body>
-    <script src="./lib/osc.min.js"></script>
     <script src="./lib/Tone.js"></script>
     <script type="text/javascript">
-
-        var osc = new OSC({
-            plugin: new OSC.WebsocketClientPlugin({ port: 9912 })
-        });
-        osc.open();
 
         var baseLayers = [], baseLayerCount = 4;
         var oneShots = [], oneShotPool = [], oneShotCount = 4;
@@ -48,8 +42,6 @@
                 }
                 else
                     oneShotPool = [...oneShots];
-            // var message = new OSC.Message("/test/random", Math.random());
-            // osc.send(message);
             setTimeout(playRandomSound, time);
         }
     </script>
