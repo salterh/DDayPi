@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <script src="./lib/Tone.js"></script>
+    <script src="./lib/p5.min.js"></script>
+    <script type="text/javascript">
+
+        var freq1 = 0, freq2 = 1000, centre, range;
+        var sample = new Tone.Player("./Audio/Placeholder.wav").toDestination();
+        var vol = new Tone.Volume(-3).toDestination();
+        var noise = new Tone.Noise("white").connect(vol).start();
+
+        sample.autostart = true;
+
+        //Temporarily use sliders in lieu of physical dials
+        var freq1Slider, freq2Slider, volumeSlider;
+
+        setCentre();
+        setRange();
+
+        function setCentre() { centre = Math.floor(Math.random() * 1000) }
+        function setRange() { range = Math.floor(Math.random() * 1000) }
+
+        function setup() {
+            freq1Slider = createSlider(0, 1000, Math.floor(Math.random() * 1000), 1);
+            freq2Slider = createSlider(0, 1000, Math.floor(Math.random() * 1000), 1);
+            volumeSlider = createSlider(-15, 0, -3, 1);
+            volumeSlider.changed(updateVolume);
+        }
+
+        function updateVolume() {
+            vol.volume.rampTo(volumeSlider.value());
+        }
+
+        function draw() {
+        }
+
+        function check() {
+            if (Math.abs(freq - centre) < range)
+                if (freq >= centre)
+                    return scale(freq, centre, centre + range, 1, 0);
+                else
+                    return scale(freq, centre, centre - range, 1, 0);
+        }
+
+        function scale(value, sourceMin, sourceMax, targetMin, targetMax) {
+            var targetRange = targetMax - targetMin;
+            var sourceRange = sourceMax - sourceMin;
+            return (value - sourceMin) * targetRange / sourceRange + targetMin;
+        }
+
+    </script>
+</body>
+
+</html>
