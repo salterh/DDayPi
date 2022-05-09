@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <script src="./lib/Tone.js"></script>
+    <script src="./lib/p5.min.js"></script>
+    <script type="text/javascript">
+
+        var freq1 = 0, freq2 = 1000, centre, range;
+        var masterVol = new Tone.Volume(-3).toDestination();
+        var noise = new Tone.Noise("white").connect(masterVol).start();
+        var sample = new Tone.Player("./Audio/Placeholder.wav").connect(masterVol).start();
+        var sampleVol = new Tone.Volume(-15).toDestination();
+        var freq1Check, freq2Check;
+
+        //Temporarily use sliders in lieu of physical dials
+        var freq1Slider, freq2Slider, volumeSlider;
+
+
+
+        function setCentre(num = Math.floor(Math.random() * 1000)) { centre = num }
+        function setRange(num = 100) { range = num }
+
+        function setup() {
+            freq1Slider = createSlider(0, 1000, Math.floor(Math.random() * 1000), 1);
+            freq2Slider = createSlider(0, 1000, Math.floor(Math.random() * 1000), 1);
+            volumeSlider = createSlider(-40, 0, -3, 1);
+            setCentre(500);
+            setRange();
+            console.log(centre)
+        }
+
+        function draw() {
+            freq1 = freq1Slider.value();
+            freq2 = freq2Slider.value();
+            masterVol.volume.rampTo(volumeSlider.value());
+            check();
+        }
+
+        function check() {
+            var combi = (freq1 + freq2) / 2;
+            var scaled;
+            if (Math.abs(combi - centre) < range)
+                if (combi >= centre) scaled = map(combi, centre, centre + range, -3, -44);
+                else scaled = map(combi, centre, centre - range, -3, -44);
+            else scaled = -44;
+            sample.volume.rampTo(scaled);     
+        }
+
+    </script>
+</body>
+
+</html>
