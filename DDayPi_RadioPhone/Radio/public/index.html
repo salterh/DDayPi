@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="./lib/p5.min.js"></script>
+    <script src="./lib/p5.sound.js"></script>
+    <meta charset="utf-8">
+
+</head>
+
+<body>
+    <script type="text/javascript">
+        var freq1 = 0, freq2 = 1000, centre, range;
+        var freq1Check, freq2Check;
+        var sample, noise;
+
+        //Temporarily use sliders in lieu of physical dials
+        var freq1Slider, freq2Slider, volumeSlider;
+
+        var counter = 0;
+        
+
+        function setCentre(num = Math.floor(Math.random() * 1000)) { centre = num; console.log(centre); }
+        function setRange(num = 150) { range = num }
+
+        function preload() {
+            sample = loadSound("./Audio/Placeholder.wav");
+            noise = new p5.Noise("pink");
+        }
+
+        function setup() {
+            freq1Slider = createSlider(0, 1000, Math.floor(Math.random() * 1000), 1);
+            freq2Slider = createSlider(0, 1000, Math.floor(Math.random() * 1000), 1);
+            volumeSlider = createSlider(0, 1, 0.7, 0.01);
+
+            freq1Slider.changed(resetCounter);
+            freq2Slider.changed(resetCounter);
+            volumeSlider.changed(resetCounter);
+
+            timer = setInterval(progress, 1000);
+
+            setCentre(500);
+            setRange();
+
+            sample.play();
+            noise.start();
+        }
+
+        function draw() {
+            freq1 = freq1Slider.value();
+            freq2 = freq2Slider.value();
+            check();
+        }
+
+        function check() {
+            var combi = (freq1 + freq2) / 2;
+            var scaled;
+            if (Math.abs(combi - centre) < range)
+                if (combi >= centre) scaled = map(combi, centre, centre + range, 1, 0);
+                else scaled = map(combi, centre, centre - range, 1, 0);
+            else scaled = 0;
+            sample.setVolume(scaled * volumeSlider.value(), 0.2);
+            noise.amp(map(scaled, 0, 1, 1, 0) * volumeSlider.value(), 0.2);
+        }
+
+        function resetCounter() {
+            counter = 0;
+        }
+
+        function progress() {
+            counter++;
+            console.log(counter);
+            if (counter > 30) {
+                setCentre(Math.floor(Math.random() * 1000));
+                counter = 0;
+            }
+        }
+    </script>
+</body>
+
+</html>
