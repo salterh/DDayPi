@@ -12,46 +12,12 @@
     <div id="label-container"></div>
     <script src="./lib/tf.min.js"></script>
     <script src="./lib/tm-pose-min.js"></script>
-    <audio src="./Audio/DiscoBarMan.wav" id="finalSample" onended="reset()"></audio>
-    <audio src="./Audio/BarChatter.wav" id="backgroundSample" autoplay="true" loop="true"></audio>
-    <!-- Tried to load in JS dynamically but wasn't working. This will have to do! -->
-    <audio src="./Audio/correctSample0.wav" id="correctSample0"></audio>
-    <audio src="./Audio/correctSample1.wav" id="correctSample1"></audio>
-    <audio src="./Audio/correctSample2.wav" id="correctSample2"></audio>
-    <audio src="./Audio/correctSample3.wav" id="correctSample3"></audio>
-    <audio src="./Audio/correctSample4.wav" id="correctSample4"></audio>
-    <audio src="./Audio/correctSample5.wav" id="correctSample5"></audio>
-    <audio src="./Audio/incorrectSample0.wav" id="incorrectSample0"></audio>
-    <audio src="./Audio/incorrectSample1.wav" id="incorrectSample1"></audio>
-    <audio src="./Audio/incorrectSample2.wav" id="incorrectSample2"></audio>
-    <audio src="./Audio/incorrectSample3.wav" id="incorrectSample3"></audio>
-    <audio src="./Audio/incorrectSample4.wav" id="incorrectSample4"></audio>
-    <audio src="./Audio/incorrectSample5.wav" id="incorrectSample5"></audio>
-    <audio src="./Audio/sfx_disco_dialog0.wav" id="dialogSample0"></audio>
-    <audio src="./Audio/sfx_disco_dialog1.wav" id="dialogSample1"></audio>
-    <audio src="./Audio/sfx_disco_dialog2.wav" id="dialogSample2"></audio>
-    <audio src="./Audio/sfx_disco_dialog3.wav" id="dialogSample3"></audio>
+    <audio src="./Audio/barMan.wav" id="finalSample" onended="reset()"></audio>
+    <audio src="./Audio/barChatter.wav" id="backgroundSample" autoplay="true" loop="true"></audio>
     <script type="text/javascript">
         var audiocontext = new AudioContext();
-        var correctSamples = [], incorrectSamples = [], dialogueSamples = [];
-        var correctElement = [], incorrectElement = [], dialogueElement = [];
-        var triggeredSamplesGain = audiocontext.createGain();
-
-        for (let i = 0; i < 6; i++) {
-            correctElement[i] = document.getElementById("correctSample" + i);
-            correctSamples[i] = audiocontext.createMediaElementSource(correctElement[i]);
-            correctSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
-
-            incorrectElement[i] = document.getElementById("incorrectSample" + i);
-            incorrectSamples[i] = audiocontext.createMediaElementSource(incorrectElement[i]);
-            incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
-        }
-
-        for (let i = 0; i < 4; i++) {
-            dialogueElement[i] = document.getElementById("dialogSample" + i);
-            dialogueSamples[i] = audiocontext.createMediaElementSource(dialogueElement[i]);
-            dialogueSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
-        }
+        var correctElement = [], incorrectElement = [], dialogElement = [], drinkPElement = [], drinkTElement = [], glassElement = [];
+        var correctSamples = [], incorrectSamples = [], dialogSamples = [], drinkPSamples = [], drinkTSamples = [], glassSamples = [];
 
         const finalSampleElement = document.getElementById("finalSample");
         const finalSample = audiocontext.createMediaElementSource(finalSampleElement);
@@ -63,11 +29,44 @@
         const backgroundGain = audiocontext.createGain();
         backgroundSample.connect(backgroundGain).connect(audiocontext.destination);
 
+        const triggeredSamplesGain = audiocontext.createGain();
+
+        for (let i = 0; i < 6; i++) {
+            correctElement[i] = document.createElement("audio");
+            correctElement[i].src = "./Audio/correctSample" + i + ".wav";
+            correctSamples[i] = audiocontext.createMediaElementSource(correctElement[i]);
+            correctSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+            incorrectElement[i] = document.createElement("audio");
+            incorrectElement[i].src = "./Audio/incorrectSample" + i + ".wav";
+            incorrectSamples[i] = audiocontext.createMediaElementSource(incorrectElement[i]);
+            incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+        }
+
+        for (let i = 0; i < 4; i++) {
+            dialogElement[i] = document.createElement("audio");
+            dialogElement[i].src = "./Audio/dialog" + i + ".wav";
+            dialogSamples[i] = audiocontext.createMediaElementSource(dialogElement[i]);
+            dialogSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+            drinkPElement[i] = document.createElement("audio");
+            drinkPElement[i].src = "./Audio/drinkPour" + i + ".wav";
+            drinkPSamples[i] = audiocontext.createMediaElementSource(drinkPElement[i]);
+            drinkPSamples[i].connect(backgroundGain).connect(audiocontext.destination);
+            drinkTElement[i] = document.createElement("audio");
+            drinkTElement[i].src = "./Audio/drinkThud" + i + ".wav";
+            drinkTSamples[i] = audiocontext.createMediaElementSource(drinkTElement[i]);
+            drinkTSamples[i].connect(backgroundGain).connect(audiocontext.destination);
+            glassElement[i] = document.createElement("audio");
+            glassElement[i].src = "./Audio/glassClink" + i + ".wav";
+            glassElement[i] = audiocontext.createMediaElementSource(glassElement[i]);
+            glassElement[i].connect(backgroundGain).connect(audiocontext.destination);
+        }
+
         //Needs updating!
         const URL = "https://teachablemachine.withgoogle.com/models/MDYJWR2mg/";
+
         let model, webcam, ctx, labelContainer, maxPredictions;
         var newPrediction, oldPrediction;
-        var checkTimer, randomTimer;
+        var checkTimer, dialogTimer, drinkTimer;
         var playerAnswer = [];
         var checkCounter = 0, correctCounter = -1;
         var isComplete = false;
@@ -99,7 +98,8 @@
                 labelContainer.appendChild(document.createElement("div"));
             }
             checkTimer = setInterval(checkChange, 500);
-            randomTimer = setTimeout(randomPlaySound, Math.floor((Math.random() * 10000) + 5000));
+            dialogTimer = setTimeout(playRandomDialog, Math.floor((Math.random() * 10000) + 5000));
+            drinkTimer = setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 5000))
         }
 
         function checkChange() {
@@ -143,15 +143,23 @@
             oldPrediction = newPrediction;
         }
 
-        function randomPlaySound() {
+        function playRandomDialog() {
             if (!isComplete && correctCounter < 2) {
                 var randomNumber = Math.floor((Math.random() * 100) + 1);
-                var randomSound = Math.floor((Math.random() * 4));
+                var randomSound = Math.floor((Math.random() * dialogElement.length));
                 if (randomNumber < 100) {
-                    dialogueElement[randomSound].play();
+                    dialogElement[randomSound].play();
                 }
             }
-            setTimeout(randomPlaySound, Math.floor((Math.random() * 10000) + 5000));
+            dialogTimer = setTimeout(playRandomDialog, Math.floor((Math.random() * 10000) + 5000));
+        }
+
+        function playRandomDrink() {
+            var randomNumber = Math.floor((Math.random() * 100) + 1);
+            var randomSound = Math.floor((Math.random() * 4));
+            if (randomNumber < 100) {
+                dialogElement[randomSound].play();
+            }
         }
 
         function reset() {
