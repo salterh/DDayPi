@@ -7,13 +7,62 @@
 
 <body>
     <div>Teachable Machine Pose Model</div>
-    <button type="button" onclick="init()">Start</button>
+    <button type="button" onclick="init()">Click me</button>
     <div><canvas id="canvas"></canvas></div>
     <div id="label-container"></div>
     <script src="./lib/tf.min.js"></script>
     <script src="./lib/tm-pose-min.js"></script>
-    <script src="./lib/Tone.js"></script>
+    <audio src="./Audio/DiscoBarMan.wav" id="finalSample" onended="reset()"></audio>
+    <audio src="./Audio/BarChatter.wav" id="backgroundSample" autoplay="true" loop="true"></audio>
+    <!-- Tried to load in JS dynamically but wasn't working. This will have to do! -->
+    <audio src="./Audio/correctSample0.wav" id="correctSample0"></audio>
+    <audio src="./Audio/correctSample1.wav" id="correctSample1"></audio>
+    <audio src="./Audio/correctSample2.wav" id="correctSample2"></audio>
+    <audio src="./Audio/correctSample3.wav" id="correctSample3"></audio>
+    <audio src="./Audio/correctSample4.wav" id="correctSample4"></audio>
+    <audio src="./Audio/correctSample5.wav" id="correctSample5"></audio>
+    <audio src="./Audio/incorrectSample0.wav" id="incorrectSample0"></audio>
+    <audio src="./Audio/incorrectSample1.wav" id="incorrectSample1"></audio>
+    <audio src="./Audio/incorrectSample2.wav" id="incorrectSample2"></audio>
+    <audio src="./Audio/incorrectSample3.wav" id="incorrectSample3"></audio>
+    <audio src="./Audio/incorrectSample4.wav" id="incorrectSample4"></audio>
+    <audio src="./Audio/incorrectSample5.wav" id="incorrectSample5"></audio>
+    <audio src="./Audio/sfx_disco_dialog0.wav" id="dialogSample0"></audio>
+    <audio src="./Audio/sfx_disco_dialog1.wav" id="dialogSample1"></audio>
+    <audio src="./Audio/sfx_disco_dialog2.wav" id="dialogSample2"></audio>
+    <audio src="./Audio/sfx_disco_dialog3.wav" id="dialogSample3"></audio>
     <script type="text/javascript">
+        var audiocontext = new AudioContext();
+        var correctSamples = [], incorrectSamples = [], dialogueSamples = [];
+        var correctElement = [], incorrectElement = [], dialogueElement = [];
+        var triggeredSamplesGain = audiocontext.createGain();
+
+        for (let i = 0; i < 6; i++) {
+            correctElement[i] = document.getElementById("correctSample" + i);
+            correctSamples[i] = audiocontext.createMediaElementSource(correctElement[i]);
+            correctSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+
+            incorrectElement[i] = document.getElementById("incorrectSample" + i);
+            incorrectSamples[i] = audiocontext.createMediaElementSource(incorrectElement[i]);
+            incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+        }
+
+        for (let i = 0; i < 4; i++) {
+            dialogueElement[i] = document.getElementById("dialogSample" + i);
+            dialogueSamples[i] = audiocontext.createMediaElementSource(dialogueElement[i]);
+            dialogueSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+        }
+
+        const finalSampleElement = document.getElementById("finalSample");
+        const finalSample = audiocontext.createMediaElementSource(finalSampleElement);
+        const finalGain = audiocontext.createGain();
+        finalSample.connect(finalGain).connect(audiocontext.destination);
+
+        const backgroundSampleElement = document.getElementById("backgroundSample");
+        const backgroundSample = audiocontext.createMediaElementSource(backgroundSampleElement);
+        const backgroundGain = audiocontext.createGain();
+        backgroundSample.connect(backgroundGain).connect(audiocontext.destination);
+
         // More API functions here:
         // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
         // the link to your model provided by Teachable Machine export panel 
@@ -21,9 +70,6 @@
         //Needs updating!
         const URL = "https://teachablemachine.withgoogle.com/models/MDYJWR2mg/";
         let model, webcam, ctx, labelContainer, maxPredictions;
-
-        var correctSamples = [], incorrectSamples = [], dialogueSamples = [];
-        var finalSample, testSample;
         var newPrediction, oldPrediction;
         var checkTimer, randomTimer;
         var playerAnswer = [];
@@ -35,26 +81,7 @@
 
         //init();
 
-
         async function init() {
-
-            // LOADING SAMPLES
-            for (let i = 0; i < 6; i++) {
-                correctSamples[i] = new Tone.Player("./Sounds/correctSample" + i + ".wav").toDestination();
-                correctSamples[i].volume.value = 0;
-                incorrectSamples[i] = new Tone.Player("./Sounds/incorrectSample" + i + ".wav").toDestination();
-            }
-
-            for (let i = 0; i < 4; i++) {
-                dialogueSamples[i] = new Tone.Player("./Sounds/sfx_disco_dialog" + i + ".wav").toDestination();
-                dialogueSamples[i].volume.value = -3;
-            }
-
-            bkgSoundscape = new Tone.Player("./Sounds/BarChatter.wav").toDestination();
-            bkgSoundscape.volume.value = -6;
-            bkgSoundscape.loop = true;
-            bkgSoundscape.autostart = true;
-            finalSample = new Tone.Player("./Sounds/DiscoBarMan.wav").toDestination();
 
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
@@ -86,6 +113,7 @@
         }
 
         function checkChange() {
+            console.log(checkCounter);
             if (newPrediction !== oldPrediction) {
                 checkCounter = 0;
             }
@@ -96,52 +124,54 @@
                     if (playerAnswer[playerAnswer.length - 1] == correctAnswer[playerAnswer.length - 1]) {
                         //Play a sample if they get the answer right
                         correctCounter++;
-                        correctSamples[correctCounter].start();
+                        correctElement[correctCounter].play();
                     }
                     else {
                         //Play a sample if they get the answer wrong
-                        incorrectSamples[playerAnswer.length - 1].start();
+                        incorrectElement[playerAnswer.length - 1].play();
+
                     }
-
-                    if (playerAnswer.length == correctAnswer.length)
+                    if (playerAnswer.length == correctAnswer.length) {
+                        console.log("same length");
                         if (JSON.stringify(playerAnswer) == JSON.stringify(correctAnswer)) {
-
                             isComplete = true;
-                            console.log("Well done!");
-                            bkgSoundscape.volume.rampTo(-15, 1);
-                            finalSample.start("+1s");
-                            finalSample.onstop = () => {
-                                console.log("Restarting...");
-                                bkgSoundscape.volume.rampTo(-6, 1);
-                                checkTimer = setInterval(checkChange, 500);
-                                isComplete = false;
-                            };
+                            backgroundGain.gain.linearRampToValueAtTime(0.2, 1);
+                            setTimeout(() => {
+                                finalSampleElement.play();
+                            }, 1000);
                             playerAnswer = [];
                             correctCounter = -1;
                             clearInterval(checkTimer);
+                            console.log("Well done");
                         }
                         else {
                             playerAnswer = [];
-                            console.log("Try again!");
+                            console.log("Try again");
                             correctCounter = -1;
                         }
+                        playerAnswer = [];
+                    }
                     checkCounter = 0;
                 }
             }
             oldPrediction = newPrediction;
-            console.log(checkCounter, correctCounter, isComplete);
         }
 
         function randomPlaySound() {
-            if (finalSample.state != "started" && !isComplete && correctCounter < 2) {
+            if (!isComplete && correctCounter < 2) {
                 var randomNumber = Math.floor((Math.random() * 100) + 1);
                 var randomSound = Math.floor((Math.random() * 4));
-
                 if (randomNumber < 100) {
-                    dialogueSamples[randomSound].start();
+                    dialogueElement[randomSound].play();
                 }
             }
             setTimeout(randomPlaySound, Math.floor((Math.random() * 10000) + 5000));
+        }
+
+        function reset() {
+            checkTimer = setInterval(checkChange, 500);
+            isComplete = false;
+            backgroundGain.gain.linearRampToValueAtTime(1, 1);
         }
 
         async function loop(timestamp) {
@@ -181,33 +211,6 @@
                 }
             }
         }
-
-        async function httpGetAsync(theUrl) {
-            var request = new XMLHttpRequest();
-            request.onreadystatechange = function () {
-                console.log("Ready state: " + request.readyState, "Request status: " + request.status);
-                if (request.readyState == 4) {
-                    if (request.status != 200)
-                        alert("ERR - request status: " + request.status);
-                    else
-                    {
-                        changeSoundscape(this.response);
-                        alert("SUCCESS");
-                    }
-                }
-            }
-            request.open("GET", theUrl, true); // true for asynchronous 
-            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            request.send(null);
-            // let request = await fetch(theUrl);
-            // let reponse = await request.text();
-            // changeSoundscape(response);
-        }
-
-        function changeSoundscape(test) {
-            alert(test);
-        }
-
     </script>
 </body>
 
