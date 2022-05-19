@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <script src="./lib/p5.min.js"></script>
+    <script src="./lib/p5.sound.min.js"></script>
+    <script src="./lib/p5.speech.js"></script>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+
+        var intros = [], clues = [], finalSample;
+        var globalIndex = -1;
+        var clueCounter = 0;
+
+        var nextButton, prevButton, clueButton;
+
+        function preload() {
+            for (let i = 0; i < 4; i++) {
+                intros[i] = loadSound("./Audio/intro" + i + ".wav");
+                clues[i] = loadSound("./Audio/clue" + i + ".wav");
+            }
+            finalSample = loadSound("./Audio/finalSample.wav");
+        }
+
+        function setup() {
+            nextButton = createButton("NEXT");
+            nextButton.mousePressed(playNext);
+            prevButton = createButton("PREV");
+            prevButton.mousePressed(playPrev);
+            clueButton = createCheckbox("CLUE", false);
+            clueButton.changed(clueOrInput);
+        }
+
+        function draw() {
+
+        }
+
+        function playNext() {
+            globalIndex++;
+            if (globalIndex > intros.length - 1)
+                globalIndex = intros.length - 1;
+            intros[globalIndex].play();
+        }
+
+        function playPrev() {
+            globalIndex--;
+            if (globalIndex < 0)
+                globalIndex = 0;
+            intros[globalIndex].play();
+        }
+
+        function clueOrInput() {
+            let check;
+            if (clueButton.checked()) {
+                clueCounter = 0;
+                check = setInterval(() => {
+                    clueCounter++;
+                }, 100)
+
+            }
+            else {
+                clearInterval(check);
+                if (clueCounter < 10)
+                    clues[globalIndex].play();
+                else {
+
+                }
+            }
+        }
+
+        function audioInput() {
+            
+        }
+
+
+    </script>
+
+</body>
+
+</html>
