@@ -12,10 +12,10 @@
 
     <script type="text/javascript">
 
-        var intros = [], clues = [], finalSample;
+        var intros = [], clues = [], finalSample, wrongSample;
         var globalIndex = -1;
         var clueCounter = 0;
-
+        var speech;
         var nextButton, prevButton, clueButton;
 
         function preload() {
@@ -24,6 +24,8 @@
                 clues[i] = loadSound("./Audio/clue" + i + ".wav");
             }
             finalSample = loadSound("./Audio/finalSample.wav");
+            wrongSample = loadSound("./Audio/wrongSample.wav");
+
         }
 
         function setup() {
@@ -33,6 +35,8 @@
             prevButton.mousePressed(playPrev);
             clueButton = createCheckbox("CLUE", false);
             clueButton.changed(clueOrInput);
+            speech = new p5.SpeechRec();
+            speech.onResult = speechFinished;
         }
 
         function draw() {
@@ -59,6 +63,10 @@
                 clueCounter = 0;
                 check = setInterval(() => {
                     clueCounter++;
+                    if (clueCounter == 10) {
+                        clearInterval(check);
+                        speech.start();
+                    }
                 }, 100)
 
             }
@@ -66,17 +74,18 @@
                 clearInterval(check);
                 if (clueCounter < 10)
                     clues[globalIndex].play();
-                else {
-
-                }
             }
         }
 
-        function audioInput() {
-            
+        function speechFinished() {
+            let data = speech.resultString.toUpperCase();
+            if (data.includes("RING") && data.includes("ENGINE")) {
+                finalSample.play();
+            }
+            else {
+                wrongSample.play();
+            }
         }
-
-
     </script>
 
 </body>
