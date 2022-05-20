@@ -49,16 +49,22 @@
             dialogSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
             drinkPElement[i] = document.createElement("audio");
             drinkPElement[i].src = "./Audio/drinkPour" + i + ".wav";
+            drinkPElement[i].onended = () => {
+                setTimeout(playRandom(drinkTElement), 5000);
+            }
             drinkPSamples[i] = audiocontext.createMediaElementSource(drinkPElement[i]);
             drinkPSamples[i].connect(backgroundGain).connect(audiocontext.destination);
             drinkTElement[i] = document.createElement("audio");
             drinkTElement[i].src = "./Audio/drinkThud" + i + ".wav";
+            drinkTElement[i].onended = () => {
+                setTimeout(playRandom(glassElement), 5000);
+            }
             drinkTSamples[i] = audiocontext.createMediaElementSource(drinkTElement[i]);
             drinkTSamples[i].connect(backgroundGain).connect(audiocontext.destination);
             glassElement[i] = document.createElement("audio");
             glassElement[i].src = "./Audio/glassClink" + i + ".wav";
-            glassElement[i] = audiocontext.createMediaElementSource(glassElement[i]);
-            glassElement[i].connect(backgroundGain).connect(audiocontext.destination);
+            glassSamples[i] = audiocontext.createMediaElementSource(glassElement[i]);
+            glassSamples[i].connect(backgroundGain).connect(audiocontext.destination);
         }
 
         //Needs updating!
@@ -103,7 +109,7 @@
         }
 
         function checkChange() {
-            console.log(checkCounter);
+            //console.log(checkCounter);
             if (newPrediction !== oldPrediction) {
                 checkCounter = 0;
             }
@@ -118,7 +124,6 @@
                     else
                         incorrectElement[playerAnswer.length - 1].play();
                     if (playerAnswer.length == correctAnswer.length) {
-                        console.log("same length");
                         if (JSON.stringify(playerAnswer) == JSON.stringify(correctAnswer)) {
                             isComplete = true;
                             backgroundGain.gain.linearRampToValueAtTime(0.2, 1);
@@ -155,11 +160,11 @@
         }
 
         function playRandomDrink() {
-            var randomNumber = Math.floor((Math.random() * 100) + 1);
+            console.log("PlayingDrink");
+            var randomNumber = Math.floor((Math.random() * 100));
             var randomSound = Math.floor((Math.random() * 4));
-            if (randomNumber < 100) {
-                dialogElement[randomSound].play();
-            }
+            drinkPElement[randomSound].play();
+            drinkTimer = setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 5000));
         }
 
         function reset() {
@@ -197,6 +202,11 @@
                     tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
                 }
             }
+        }
+
+        function playRandom(arr) {
+            let random = Math.floor(Math.random() * arr.length);
+            arr[random].play();
         }
     </script>
 </body>

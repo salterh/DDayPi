@@ -7,24 +7,21 @@
     <script src="./lib/p5.sound.min.js"></script>
     <script src="./lib/p5.speech.js"></script>
 </head>
-
 <body>
-
     <script type="text/javascript">
-
         var intros = [], clues = [], finalSample, wrongSample;
         var globalIndex = -1;
         var clueCounter = 0;
-        var speech;
+        var speech, check;
         var nextButton, prevButton, clueButton;
 
         function preload() {
-            for (let i = 0; i < 4; i++) {
-                intros[i] = loadSound("./Audio/intro" + i + ".wav");
-                clues[i] = loadSound("./Audio/clue" + i + ".wav");
-            }
-            finalSample = loadSound("./Audio/finalSample.wav");
-            wrongSample = loadSound("./Audio/wrongSample.wav");
+            // for (let i = 0; i < 4; i++) {
+            //     intros[i] = loadSound("./Audio/intro" + i + ".wav");
+            //     clues[i] = loadSound("./Audio/clue" + i + ".wav");
+            // }
+            // finalSample = loadSound("./Audio/finalSample.wav");
+            // wrongSample = loadSound("./Audio/wrongSample.wav");
 
         }
 
@@ -45,25 +42,28 @@
 
         function playNext() {
             globalIndex++;
-            if (globalIndex > intros.length - 1)
-                globalIndex = intros.length - 1;
-            intros[globalIndex].play();
+            if (globalIndex > 3)
+                globalIndex = 3;
+            // intros[globalIndex].play();
+            console.log("Playing sample " + globalIndex);
         }
 
         function playPrev() {
             globalIndex--;
             if (globalIndex < 0)
                 globalIndex = 0;
-            intros[globalIndex].play();
+            // intros[globalIndex].play();
+            console.log("Playing sample " + globalIndex);
         }
 
         function clueOrInput() {
-            let check;
             if (clueButton.checked()) {
                 clueCounter = 0;
                 check = setInterval(() => {
                     clueCounter++;
+                    console.log(clueCounter);
                     if (clueCounter == 10) {
+                        console.log("Speech Recognition");
                         clearInterval(check);
                         speech.start();
                     }
@@ -72,22 +72,24 @@
             }
             else {
                 clearInterval(check);
-                if (clueCounter < 10)
-                    clues[globalIndex].play();
+                if (clueCounter < 10) {
+                    // clues[globalIndex].play();
+                    console.log("Playing Clue " + globalIndex);
+                }
             }
         }
 
         function speechFinished() {
             let data = speech.resultString.toUpperCase();
             if (data.includes("RING") && data.includes("ENGINE")) {
-                finalSample.play();
+                // finalSample.play();
+                console.log("Final Sample Playing");
             }
             else {
-                wrongSample.play();
+                // wrongSample.play();
+                console.log("You got it wrong");
             }
         }
     </script>
-
 </body>
-
 </html>
