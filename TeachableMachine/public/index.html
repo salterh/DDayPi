@@ -16,8 +16,8 @@
     <audio src="./Audio/barChatter.wav" id="backgroundSample" autoplay="true" loop="true"></audio>
     <script type="text/javascript">
         var audiocontext = new AudioContext();
-        var correctElement = [], incorrectElement = [], dialogElement = [], drinkPElement = [], drinkTElement = [], glassElement = [];
-        var correctSamples = [], incorrectSamples = [], dialogSamples = [], drinkPSamples = [], drinkTSamples = [], glassSamples = [];
+        var correctElement = [], incorrectElement = [], dialogElement = [], drinkPElement = [], drinkTElement = [], glassElement = [], trackElement = [], engineElement = [];
+        var correctSamples = [], incorrectSamples = [], dialogSamples = [], drinkPSamples = [], drinkTSamples = [], glassSamples = [], trackSamples = [], engineSamples = [];
 
         const finalSampleElement = document.getElementById("finalSample");
         const finalSample = audiocontext.createMediaElementSource(finalSampleElement);
@@ -30,6 +30,7 @@
         backgroundSample.connect(backgroundGain).connect(audiocontext.destination);
 
         const triggeredSamplesGain = audiocontext.createGain();
+        const musicGain = audiocontext.createGain();
 
         for (let i = 0; i < 6; i++) {
             correctElement[i] = document.createElement("audio");
@@ -40,6 +41,18 @@
             incorrectElement[i].src = "./Audio/incorrectSample" + i + ".wav";
             incorrectSamples[i] = audiocontext.createMediaElementSource(incorrectElement[i]);
             incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+
+            engineElement[i] = document.createElement("audio");
+            engineElement[i].src = "./Audio/engineSample" + i + ".wav";
+            engineSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
+            engineSamples[i].connect(musicGain).connect(audiocontext.destination);
+
+            trackElement[i] = document.createElement("audio");
+            trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
+            trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
+            trackSamples[i].connect(musicGain).connect(audiocontext.destination);
+            
+
         }
 
         for (let i = 0; i < 4; i++) {
