@@ -33,49 +33,57 @@
         const musicGain = audiocontext.createGain();
 
         for (let i = 0; i < 6; i++) {
-            correctElement[i] = document.createElement("audio");
-            correctElement[i].src = "./Audio/correctSample" + i + ".wav";
-            correctSamples[i] = audiocontext.createMediaElementSource(correctElement[i]);
-            correctSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
-            incorrectElement[i] = document.createElement("audio");
-            incorrectElement[i].src = "./Audio/incorrectSample" + i + ".wav";
-            incorrectSamples[i] = audiocontext.createMediaElementSource(incorrectElement[i]);
-            incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+            //Debugging
+            // correctElement[i] = document.createElement("audio");
+            // correctElement[i].src = "./Audio/correctSample" + i + ".wav";
+            // correctSamples[i] = audiocontext.createMediaElementSource(correctElement[i]);
+            // correctSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+            // incorrectElement[i] = document.createElement("audio");
+            // incorrectElement[i].src = "./Audio/incorrectSample" + i + ".wav";
+            // incorrectSamples[i] = audiocontext.createMediaElementSource(incorrectElement[i]);
+            // incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
 
-            engineElement[i] = document.createElement("audio");
-            engineElement[i].src = "./Audio/engineSample" + i + ".wav";
-            engineSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
-            engineSamples[i].connect(musicGain).connect(audiocontext.destination);
+            //Engine Sounds
+            // engineElement[i] = document.createElement("audio");
+            // engineElement[i].src = "./Audio/engineSample" + i + ".wav";
+            // engineSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
+            // engineSamples[i].connect(musicGain).connect(audiocontext.destination);
 
-            trackElement[i] = document.createElement("audio");
-            trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
-            trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
-            trackSamples[i].connect(musicGain).connect(audiocontext.destination);
-            
-
+            //Music
+            // trackElement[i] = document.createElement("audio");
+            // trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
+            // trackElement[i].loop = true;
+            // trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
+            // trackSamples[i].connect(musicGain).connect(audiocontext.destination);
         }
 
         for (let i = 0; i < 4; i++) {
+            //Dialog
             dialogElement[i] = document.createElement("audio");
             dialogElement[i].src = "./Audio/dialog" + i + ".wav";
             dialogSamples[i] = audiocontext.createMediaElementSource(dialogElement[i]);
             dialogSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+
+            //Drinks
             drinkPElement[i] = document.createElement("audio");
             drinkPElement[i].src = "./Audio/drinkPour" + i + ".wav";
-            drinkPElement[i].onended = () => {
-                setTimeout(playRandom(drinkTElement), 5000);
-            }
+            drinkPElement[i].addEventListener("ended", () => {
+                setTimeout(playRandom(drinkTElement), Math.floor((Math.random() * 2000) + 1000));
+            });
             drinkPSamples[i] = audiocontext.createMediaElementSource(drinkPElement[i]);
             drinkPSamples[i].connect(backgroundGain).connect(audiocontext.destination);
             drinkTElement[i] = document.createElement("audio");
             drinkTElement[i].src = "./Audio/drinkThud" + i + ".wav";
-            drinkTElement[i].onended = () => {
-                setTimeout(playRandom(glassElement), 5000);
-            }
+            drinkTElement[i].addEventListener("ended", () => {
+                setTimeout(playRandom(glassElement), Math.floor((Math.random() * 5000) + 3000));
+            });
             drinkTSamples[i] = audiocontext.createMediaElementSource(drinkTElement[i]);
             drinkTSamples[i].connect(backgroundGain).connect(audiocontext.destination);
             glassElement[i] = document.createElement("audio");
             glassElement[i].src = "./Audio/glassClink" + i + ".wav";
+            glassElement[i].addEventListener("ended", () => {
+                setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 5000));
+            });
             glassSamples[i] = audiocontext.createMediaElementSource(glassElement[i]);
             glassSamples[i].connect(backgroundGain).connect(audiocontext.destination);
         }
@@ -84,10 +92,9 @@
         const URL = "https://teachablemachine.withgoogle.com/models/MDYJWR2mg/";
 
         let model, webcam, ctx, labelContainer, maxPredictions;
-        var newPrediction, oldPrediction;
+        var currentPrediction, oldPrediction;
         var checkTimer, dialogTimer, drinkTimer;
-        var playerAnswer = [];
-        var checkCounter = 0, correctCounter = -1;
+        var checkCounter = 0, correctCounter = 0;
         var isComplete = false;
 
         //Needs updating!
@@ -97,6 +104,7 @@
 
         async function init() {
             backgroundSampleElement.play();
+            //trackElement[0].play();
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
             model = await tmPose.load(modelURL, metadataURL);
@@ -107,6 +115,7 @@
             webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
             await webcam.setup(); // request access to the webcam
             await webcam.play();
+            console.log(webcam);
             window.requestAnimationFrame(loop);
 
             const canvas = document.getElementById("canvas");
@@ -123,42 +132,38 @@
 
         function checkChange() {
             //console.log(checkCounter);
-            if (newPrediction !== oldPrediction) {
+            if (currentPrediction !== oldPrediction) {
                 checkCounter = 0;
             }
             else {
                 checkCounter++;
                 if (checkCounter > 3) {
-                    playerAnswer.push(parseInt(newPrediction));
-                    if (playerAnswer[playerAnswer.length - 1] == correctAnswer[playerAnswer.length - 1]) {
+                    if (currentPrediction == correctAnswer[correctCounter]) {
+                        //correctElement[correctCounter].play();
+                        console.log("correct!");
                         correctCounter++;
-                        correctElement[correctCounter].play();
+                        checkCounter = 0;
                     }
-                    else
-                        incorrectElement[playerAnswer.length - 1].play();
-                    if (playerAnswer.length == correctAnswer.length) {
-                        if (JSON.stringify(playerAnswer) == JSON.stringify(correctAnswer)) {
-                            isComplete = true;
-                            backgroundGain.gain.linearRampToValueAtTime(0.2, 1);
-                            setTimeout(() => {
-                                finalSampleElement.play();
-                            }, 1000);
-                            playerAnswer = [];
-                            correctCounter = -1;
-                            clearInterval(checkTimer);
-                            console.log("Well done");
-                        }
-                        else {
-                            playerAnswer = [];
-                            console.log("Try again");
-                            correctCounter = -1;
-                        }
-                        playerAnswer = [];
+                    else {
+                        console.log("incorrect");
+                        //incorrectElement[correctCounter].play();
+                        checkCounter = 0;
                     }
-                    checkCounter = 0;
+                    console.log(correctCounter, "/", correctAnswer.length);
                 }
             }
-            oldPrediction = newPrediction;
+            if (correctCounter >= correctAnswer.length) {
+                isComplete = true;
+                backgroundGain.gain.exponentialRampToValueAtTime(0.2, 1);
+                setTimeout(() => {
+                    finalSampleElement.play();
+                }, 1000);
+                correctCounter = 0;
+                checkCounter = 0;
+                clearInterval(checkTimer);
+                console.log("Well done");
+            }
+            oldPrediction = currentPrediction;
         }
 
         function playRandomDialog() {
@@ -173,17 +178,17 @@
         }
 
         function playRandomDrink() {
-            console.log("PlayingDrink");
+
+            console.log("Pouring drink...");
             var randomNumber = Math.floor((Math.random() * 100));
             var randomSound = Math.floor((Math.random() * 4));
             drinkPElement[randomSound].play();
-            drinkTimer = setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 5000));
         }
 
         function reset() {
             checkTimer = setInterval(checkChange, 500);
             isComplete = false;
-            backgroundGain.gain.linearRampToValueAtTime(1, 1);
+            backgroundGain.gain.exponentialRampToValueAtTime(1, 1);
         }
 
         async function loop(timestamp) {
@@ -199,7 +204,7 @@
                 const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
                 labelContainer.childNodes[i].innerHTML = classPrediction;
             }
-            newPrediction = Object.keys(prediction).reduce(function (a, b) {
+            currentPrediction = Object.keys(prediction).reduce(function (a, b) {
                 return (parseFloat(prediction[a].probability.toFixed(2)) > parseFloat(prediction[b].probability.toFixed(2)) ? a : b);
             });
             drawPose(pose);
