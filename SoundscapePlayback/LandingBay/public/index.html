@@ -36,7 +36,7 @@
         function playRandomSound() {
             if (oneShotPool.length > 0)
                 if (Math.random() * 100 < chance) {
-                    let randomIndex = Math.floor(Math.random(oneShotPool.length));
+                    let randomIndex = Math.floor(Math.random() * oneShotPool.length);
                     oneShotPool[randomIndex].start();
                     oneShotPool.splice(randomIndex, 1);
                 }
