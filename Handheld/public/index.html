@@ -1,36 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 
 <head>
-    <meta charset="utf-8" />
-    <script src="./lib/p5.min.js"></script>
-    <script src="./lib/p5.sound.min.js"></script>
-    <script src="./lib/p5.speech.js"></script>
+    <meta charset='utf-8' />
+    <script src='./lib/p5.min.js'></script>
+    <script src='./lib/p5.sound.min.js'></script>
+    <script src='./lib/p5.speech.js'></script>
 </head>
+
 <body>
-    <script type="text/javascript">
-        var intros = [], clues = [], finalSample, wrongSample;
-        var globalIndex = -1;
-        var clueCounter = 0;
+    <script type='text/javascript'>
+        var intros = [],
+            LBClues = [],
+            MOClues = [],
+            NCClues = [],
+            UDClues = [],
+            clues = [LBClues, NCClues, MOClues, UDClues],
+            introSample,
+            finalSample,
+            wrongSample;
+
+
+        var globalIndex = -2,
+            speechCounter = 0,
+            clueCounter = -1;
+
         var speech, check;
-        var nextButton, prevButton, clueButton;
+
+        var nextButton,
+            prevButton,
+            clueButton;
+
+        var currentlyPlaying;
 
         function preload() {
-            // for (let i = 0; i < 4; i++) {
-            //     intros[i] = loadSound("./Audio/intro" + i + ".wav");
-            //     clues[i] = loadSound("./Audio/clue" + i + ".wav");
-            // }
-            // finalSample = loadSound("./Audio/finalSample.wav");
-            // wrongSample = loadSound("./Audio/wrongSample.wav");
+            for (let i = 0; i < 4; i++) {
+                intros[i] = loadSound('./Audio/intro' + i + '.wav');
+            }
+            for (let i = 0; i < 2; i++) {
+                LBClues[i] = loadSound('./Audio/LBClue' + i + '.wav');
+                NCClues[i] = loadSound('./Audio/NCClue' + i + '.wav');
+            }
+            MOClues[0] = loadSound('./Audio/MOClue0.wav');
+            UDClues[0] = loadSound('./Audio/UDClue0.wav');
+
+            introSample = loadSound('./Audio/mainIntro.wav');
+            introSample.playMode('restart');
+
+            finalSample = loadSound('./Audio/finalSample.wav');
+            // wrongSample = loadSound('./Audio/wrongSample.wav');
 
         }
 
         function setup() {
-            nextButton = createButton("NEXT");
+            nextButton = createButton('NEXT');
             nextButton.mousePressed(playNext);
-            prevButton = createButton("PREV");
+            prevButton = createButton('PREV');
             prevButton.mousePressed(playPrev);
-            clueButton = createCheckbox("CLUE", false);
+            clueButton = createCheckbox('CLUE', false);
             clueButton.changed(clueOrInput);
             speech = new p5.SpeechRec();
             speech.onResult = speechFinished;
@@ -42,28 +69,52 @@
 
         function playNext() {
             globalIndex++;
-            if (globalIndex > 3)
-                globalIndex = 3;
-            // intros[globalIndex].play();
-            console.log("Playing sample " + globalIndex);
+            clueCounter = -1;
+            if (globalIndex > intros.length - 1)
+                globalIndex = intros.length - 1;
+
+            if (currentlyPlaying != undefined)
+                currentlyPlaying.stop();
+
+            if (globalIndex == -1) {
+                introSample.play();
+                currentlyPlaying = introSample;
+            }
+            else {
+                intros[globalIndex].play();
+                currentlyPlaying = intros[globalIndex];
+            }
         }
 
         function playPrev() {
             globalIndex--;
-            if (globalIndex < 0)
-                globalIndex = 0;
-            // intros[globalIndex].play();
-            console.log("Playing sample " + globalIndex);
+            clueCounter = -1;
+            if (globalIndex < -1)
+                globalIndex = -1;
+
+            if (currentlyPlaying != undefined)
+                currentlyPlaying.stop();
+
+            if (globalIndex == -1) {
+                introSample.play();
+                currentlyPlaying = introSample;
+            }
+            else {
+                intros[globalIndex].play();
+                currentlyPlaying = intros[globalIndex];
+            }
+
         }
 
         function clueOrInput() {
+            if (currentlyPlaying != undefined)
+                currentlyPlaying.stop();
             if (clueButton.checked()) {
-                clueCounter = 0;
+                speechCounter = 0;
                 check = setInterval(() => {
-                    clueCounter++;
-                    console.log(clueCounter);
-                    if (clueCounter == 10) {
-                        console.log("Speech Recognition");
+                    speechCounter++;
+                    if (speechCounter == 10) {
+                        console.log('Speech Recognition');
                         clearInterval(check);
                         speech.start();
                     }
@@ -72,24 +123,30 @@
             }
             else {
                 clearInterval(check);
-                if (clueCounter < 10) {
-                    // clues[globalIndex].play();
-                    console.log("Playing Clue " + globalIndex);
+                if (speechCounter < 10) {
+                    if (globalIndex >= 0) {
+                        clueCounter++;
+                        if (clueCounter > clues[globalIndex].length - 1)
+                            clueCounter = 0;
+                        clues[globalIndex][clueCounter].play();
+                        currentlyPlaying = clues[globalIndex][clueCounter];
+                    }
                 }
             }
         }
 
         function speechFinished() {
             let data = speech.resultString.toUpperCase();
-            if (data.includes("RING") && data.includes("ENGINE")) {
+            if (data.includes('RING') && data.includes('ENGINE')) {
                 // finalSample.play();
-                console.log("Final Sample Playing");
+                console.log('Final Sample Playing');
             }
             else {
                 // wrongSample.play();
-                console.log("You got it wrong");
+                console.log('You got it wrong');
             }
         }
     </script>
 </body>
+
 </html>
