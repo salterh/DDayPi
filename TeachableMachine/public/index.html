@@ -21,18 +21,29 @@
 
         const finalSampleElement = document.getElementById("finalSample");
         const finalSample = audiocontext.createMediaElementSource(finalSampleElement);
+
         const finalGain = audiocontext.createGain();
-        finalSample.connect(finalGain).connect(audiocontext.destination);
+        finalGain.connect(audiocontext.destination);
+
+        finalSample.connect(finalGain);
 
         const backgroundSampleElement = document.getElementById("backgroundSample");
         const backgroundSample = audiocontext.createMediaElementSource(backgroundSampleElement);
+
         const backgroundGain = audiocontext.createGain();
-        backgroundSample.connect(backgroundGain).connect(audiocontext.destination);
+        backgroundGain.gain.value = 0.4;
+        backgroundGain.connect(audiocontext.destination);
+
+        backgroundSample.connect(backgroundGain);
 
         const triggeredSamplesGain = audiocontext.createGain();
-        const musicGain = audiocontext.createGain();
+        triggeredSamplesGain.connect(audiocontext.destination);
 
-        for (let i = 0; i < 6; i++) {
+        const musicGain = audiocontext.createGain();
+        musicGain.connect(audiocontext.destination);
+
+
+        for (let i = 0; i < 3; i++) {
             //Debugging
             // correctElement[i] = document.createElement("audio");
             // correctElement[i].src = "./Audio/correctSample" + i + ".wav";
@@ -50,12 +61,15 @@
             // engineSamples[i].connect(musicGain).connect(audiocontext.destination);
 
             //Music
-            // trackElement[i] = document.createElement("audio");
-            // trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
-            // trackElement[i].loop = true;
-            // trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
-            // trackSamples[i].connect(musicGain).connect(audiocontext.destination);
+            trackElement[i] = document.createElement("audio");
+            trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
+            trackElement[i].loop = true;
+            trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
+            trackSamples[i].connect(musicGain);
         }
+
+        console.log(trackSamples);
+        console.log(musicGain);
 
         for (let i = 0; i < 4; i++) {
             //Dialog
@@ -99,12 +113,11 @@
 
         //Needs updating!
         var correctAnswer = [0, 0, 0, 0, 0, 0];
-
+        trackElement[correctCounter].play();
         //init();
 
         async function init() {
             backgroundSampleElement.play();
-            //trackElement[0].play();
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
             model = await tmPose.load(modelURL, metadataURL);
@@ -139,9 +152,16 @@
                 checkCounter++;
                 if (checkCounter > 3) {
                     if (currentPrediction == correctAnswer[correctCounter]) {
+                        musicGain.gain.linearRampToValueAtTime(1.0, audiocontext.currentTime);
+                        musicGain.gain.linearRampToValueAtTime(0.01, audiocontext.currentTime + 2.0);
+                        setTimeout(() => {
+                            trackElement[correctCounter].pause();
+                            correctCounter++;
+                            trackElement[correctCounter].play();
+                            musicGain.gain.linearRampToValueAtTime(1.0, audiocontext.currentTime + 2.0);
+                        }, 2000)
                         //correctElement[correctCounter].play();
                         console.log("correct!");
-                        correctCounter++;
                         checkCounter = 0;
                     }
                     else {
