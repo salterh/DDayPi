@@ -42,6 +42,11 @@
         const musicGain = audiocontext.createGain();
         musicGain.connect(audiocontext.destination);
 
+        let model, webcam, ctx, labelContainer, maxPredictions;
+        var currentPrediction, oldPrediction;
+        var checkTimer, dialogTimer, drinkTimer;
+        var checkCounter = 0, correctCounter = 0;
+        var isComplete = false;
 
         for (let i = 0; i < 3; i++) {
             //Debugging
@@ -55,10 +60,14 @@
             // incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
 
             //Engine Sounds
-            // engineElement[i] = document.createElement("audio");
-            // engineElement[i].src = "./Audio/engineSample" + i + ".wav";
-            // engineSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
-            // engineSamples[i].connect(musicGain).connect(audiocontext.destination);
+            engineElement[i] = document.createElement("audio");
+            engineElement[i].src = "./Audio/engine" + i + ".wav";
+            engineElement[i].addEventListener("ended", () => {
+                musicGain.gain.linearRampToValueAtTime(1.0, audiocontext.currentTime);
+                trackElement[correctCounter].play();
+            });
+            engineSamples[i] = audiocontext.createMediaElementSource(engineElement[i]);
+            engineSamples[i].connect(musicGain);
 
             //Music
             trackElement[i] = document.createElement("audio");
@@ -68,15 +77,12 @@
             trackSamples[i].connect(musicGain);
         }
 
-        console.log(trackSamples);
-        console.log(musicGain);
-
         for (let i = 0; i < 4; i++) {
             //Dialog
             dialogElement[i] = document.createElement("audio");
             dialogElement[i].src = "./Audio/dialog" + i + ".wav";
             dialogSamples[i] = audiocontext.createMediaElementSource(dialogElement[i]);
-            dialogSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
+            dialogSamples[i].connect(triggeredSamplesGain);
 
             //Drinks
             drinkPElement[i] = document.createElement("audio");
@@ -85,31 +91,25 @@
                 setTimeout(playRandom(drinkTElement), Math.floor((Math.random() * 2000) + 1000));
             });
             drinkPSamples[i] = audiocontext.createMediaElementSource(drinkPElement[i]);
-            drinkPSamples[i].connect(backgroundGain).connect(audiocontext.destination);
+            drinkPSamples[i].connect(backgroundGain);
             drinkTElement[i] = document.createElement("audio");
             drinkTElement[i].src = "./Audio/drinkThud" + i + ".wav";
             drinkTElement[i].addEventListener("ended", () => {
-                setTimeout(playRandom(glassElement), Math.floor((Math.random() * 5000) + 3000));
+                setTimeout(playRandom(glassElement), Math.floor((Math.random() * 5000) + 1000));
             });
             drinkTSamples[i] = audiocontext.createMediaElementSource(drinkTElement[i]);
-            drinkTSamples[i].connect(backgroundGain).connect(audiocontext.destination);
+            drinkTSamples[i].connect(backgroundGain);
             glassElement[i] = document.createElement("audio");
             glassElement[i].src = "./Audio/glassClink" + i + ".wav";
             glassElement[i].addEventListener("ended", () => {
-                setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 5000));
+                setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 1000));
             });
             glassSamples[i] = audiocontext.createMediaElementSource(glassElement[i]);
-            glassSamples[i].connect(backgroundGain).connect(audiocontext.destination);
+            glassSamples[i].connect(backgroundGain);
         }
 
         //Needs updating!
         const URL = "https://teachablemachine.withgoogle.com/models/MDYJWR2mg/";
-
-        let model, webcam, ctx, labelContainer, maxPredictions;
-        var currentPrediction, oldPrediction;
-        var checkTimer, dialogTimer, drinkTimer;
-        var checkCounter = 0, correctCounter = 0;
-        var isComplete = false;
 
         //Needs updating!
         var correctAnswer = [0, 0, 0, 0, 0, 0];
@@ -145,21 +145,16 @@
 
         function checkChange() {
             //console.log(checkCounter);
-            if (currentPrediction !== oldPrediction) {
+            if (currentPrediction !== oldPrediction)
                 checkCounter = 0;
-            }
             else {
                 checkCounter++;
                 if (checkCounter > 3) {
                     if (currentPrediction == correctAnswer[correctCounter]) {
-                        musicGain.gain.linearRampToValueAtTime(1.0, audiocontext.currentTime);
-                        musicGain.gain.linearRampToValueAtTime(0.01, audiocontext.currentTime + 2.0);
-                        setTimeout(() => {
-                            trackElement[correctCounter].pause();
-                            correctCounter++;
-                            trackElement[correctCounter].play();
-                            musicGain.gain.linearRampToValueAtTime(1.0, audiocontext.currentTime + 2.0);
-                        }, 2000)
+                        playRandom(engineElement);
+                        trackElement[correctCounter].pause();
+                        correctCounter++;
+
                         //correctElement[correctCounter].play();
                         console.log("correct!");
                         checkCounter = 0;
@@ -245,6 +240,7 @@
         function playRandom(arr) {
             let random = Math.floor(Math.random() * arr.length);
             arr[random].play();
+            console.log(arr[random]);
         }
     </script>
 </body>
