@@ -10,6 +10,20 @@
 
 <body>
     <script type='text/javascript'>
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/gpio");
+
+    checkGPIO();
+
+    function checkGPIO() {
+        xhr.send();
+    }
+
+    xhr.onload = () => {
+        console.log(xhr.status, xhr.response);
+    }
+
         var intros = [],
             LBClues = [],
             MOClues = [],
