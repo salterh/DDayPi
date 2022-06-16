@@ -133,6 +133,7 @@
                 console.log('Final Sample Playing');
             }
             else if (data.includes("HELP") || data.includes("HINT") || data.includes("CLUE")) {
+                console.log("Giving a clue...");
                 clueCounter++;
                 if (clueCounter > clues[globalIndex].length - 1)
                     clueCounter = 0;
