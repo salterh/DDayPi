@@ -12,10 +12,10 @@
     <script type='text/javascript'>
 
         let xhr = new XMLHttpRequest();
-        checkGPIO();
+        
 
         function checkGPIO() {
-            xhr.open("GET", "/gpio");
+            xhr.open("GET", "/startMic");
             xhr.send();
         }
 
@@ -124,6 +124,7 @@
             if (currentlyPlaying != undefined)
                 currentlyPlaying.stop();
             speech.start();
+            checkGPIO();
         }
 
         function speechFinished() {
