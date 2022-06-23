@@ -1,17 +1,29 @@
 import speech_recognition as sr
-import pyttsx3
+import pygame
+import keyboard
+intros = []
+
+pygame.mixer.init(44100,-16,2,1024)
+test = pygame.mixer.Sound("Audio/intro0.wav")
+print(test)
+
+##for i in range(0, 4):
+##    intros.append(pygame.mixer.Sound("./Audio/intros" +str(i) +".wav"))
+##    print("Loaded " +str(i+1) +" audio file(s)")
 
 r = sr.Recognizer()
 
-def SpeakText(command):
-    engine = pyttsx3.init()
-    engine.say(command)
-    engine.runAndWait()
-
-with sr.Microphone() as source2:
-    r.adjust_for_ambient_noise(source2, duration=0.2)
-    audio2 = r.listen(source2)
-    myText = r.recognize_google(audio2)
-    myText = myText.lower()
-    print(myText)
-    SpeakText(myText)
+def begin():
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source, duration=0.2)
+        audio = r.listen(source)
+        print("Starting...")
+        myText = r.recognize_sphinx(audio, "en-GB")
+        myText = myText.lower()
+        print("You said " +myText)
+        if "hello" in myText:
+            print("Good job")
+            
+while True:
+    if keyboard.read_key() == "p":
+        print(pygame.mixer.Sound(test).play())
