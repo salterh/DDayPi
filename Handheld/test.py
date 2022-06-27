@@ -18,7 +18,7 @@ def begin():
         r.adjust_for_ambient_noise(source, duration=0.2)
         audio = r.listen(source)
         print("Starting...")
-        myText = r.recognize_sphinx(audio, "en-GB")
+        myText = r.recognize_sphinx(audio, "en-US")
         myText = myText.lower()
         print("You said " +myText)
         if "hello" in myText:
@@ -26,4 +26,6 @@ def begin():
             
 while True:
     if keyboard.read_key() == "p":
-        print(pygame.mixer.Sound(test).play())
+        pygame.mixer.Sound.play(test)
+    elif keyboard.read_key() == "b":
+        begin()
