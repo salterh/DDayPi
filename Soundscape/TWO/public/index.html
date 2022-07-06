@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='utf-8' />
+</head>
+
+<body>
+    <script src="lib/Tone.js"></script>
+    <button type="button">Begin</button>
+    <script type='text/javascript'>
+
+        document.querySelector('button')?.addEventListener('click', async () => {
+            await Tone.start()
+            console.log('audio is ready')
+            for (let i = 0; i < baseLayerCount; i++) {
+                baseLayers[i].start();
+            }
+            setTimeout(beginConvo, (Math.random() * 10000) + 5000);
+            //setTimeout(beginConvo, (Math.random() * 60000) + 180000);
+            setTimeout(playRandomSound, time);
+        })
+
+        var audiocontext = new AudioContext();
+        var baseLayers = [], baseLayerCount = 4;
+        var oneShots = [], oneShotPool = [], oneShotCount = 4;
+        var convos = [], convoCount = 4;
+        var chance = 50;
+        var time = 10000;
+
+        preload();
+
+        function preload() {
+            for (let i = 0; i < baseLayerCount; i++) {
+                baseLayers[i] = new Tone.Player('./Audio/baseLayer' + i + '.wav').toDestination();
+                baseLayers[i].loop = true;
+                baseLayers[i].autostart = true;
+                baseLayers[i].volume.value = -16;
+            }
+            for (let i = 0; i < oneShotCount; i++) {
+                oneShots[i] = new Tone.Player('./Audio/oneShot' + i + '.wav').toDestination();
+                oneShots[i].volume.value = -12;
+            }
+            for (let i = 0; i < convoCount; i++) {
+                convos[i] = new Tone.Player('./Audio/convoLine' + i + '.ogg').toDestination();
+                convos[i].volume.value = 3
+            }
+            for (let i = 0; i < convoCount; i++) {
+                if (i != convoCount - 1)
+                    convos[i].onstop = () => {
+                        convos[i + 1].start()
+                    }
+                else
+                    convos[i].onstop = () => {
+                        setTimeout(beginConvo, (Math.random() * 10000) + 5000);
+                    }
+            }
+        }
+
+        oneShotPool = [...oneShots];
+
+        function playRandomSound() {
+            console.log('Playing Random Sound');
+            if (oneShotPool.length > 0) {
+                let randomIndex = Math.floor(Math.random() * oneShotPool.length);
+                oneShotPool[randomIndex].start();
+                oneShotPool.splice(randomIndex, 1);
+            }
+            else
+                oneShotPool = [...oneShots];
+            setTimeout(playRandomSound, (Math.random() * time) + 5000);
+        }
+
+        function beginConvo() {
+            console.log('Playing Convo')
+            convos[0].start();
+        }
+    </script>
+</body>
+
+</html>
