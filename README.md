@@ -4,16 +4,6 @@
 
 An interactive timeloop soundscape which presents aural opportunities for participants to find clues and answer questions in interesting ways. Participants should listen closely to audio clues and pay attention to their surroundings to answer questions which meaningfully change the soundscape.
 
-## TODO 
-
-- [ ] Bash script to setup Pi's with sound library @spearse
-- [x] Setup OSC Message glossary/terms
-- [x] Settle on OSC networking structure
-- [ ] Bash script for setting up WIFI broadcasting @spearse
-- [x] Basic sound playback 
-- [x] Sound playback with or without fading
-- [ ] Compostional structure & layering
-
 ### OSC Message Structure
 
 /Address/Team Number/Information
