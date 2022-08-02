@@ -41,4 +41,4 @@ while True:
         if event.name == 'w':
             addCount()
         elif event.name == 'e':
-            dialRelease() 
+            dialRelease()

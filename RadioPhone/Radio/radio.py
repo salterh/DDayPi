@@ -2,6 +2,20 @@ import gpiozero as gpio
 import pygame
 import numpy
 import random
+import asyncio
+
+freqRange = 150
+freq1Pot = gpio.MCP3008(channel=0)
+freq2Pot = gpio.MCP3008(channel=1)
+volPot = gpio.MCP3008(channel=2)
+counter = 0
+
+def scale(oldValue, oldMin, oldMax, newMin, newMax):
+    return (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin)
+
+def setMiddle():
+    global middle
+    middle = random.range(0, 1000)
 
 def preload():
     global noise
@@ -10,31 +24,28 @@ def preload():
     noiseList = numpy.random.uniform(-1,1,44100)
     noise = pygame.mixer.Sound(noiseList)
 #    sample = pygame.mixer.Sound("./Audio/sample.wav")
-    setup()
-
-def setup():
     pygame.mixer.Sound.play(noise, loops=-1)
-    print(noise.get_raw())
+#    pygame.mixer.Sound.play(sample, loops=-1)
+
+def timerFunc():
+    counter+=1
+    if counter > 30:
+        setCentre()
 
 preload()
 
 while True:
-    global vol
-    vol = scale(volPot.value,-1,1,0,1)
-    noise.set_volume(vol)
+    combi = (freq1Pot.value / freq2Pot.value) / 2
+    if abs(combi - middle) > range:
+        if (combi >= middle): scaled = scale(combi, middle, middle + freqRange, 1, 0)
+        else: scaled = scale(combie, middle, middle - freqRange, 1, 0)
+    else: scaled = 0
+#    sample.set_volume(scaled * volPot.value)
+    noise.set_volume(scale(scaled, 0, 1, 1, 0) * volPot.value)
+        
     
 
-#freq1Pot = gpio.RotaryEncoder(15, 18)
-#freq2Pot = gpio.RotaryEncoder(23, 24)
-#volPot = gpio.RotaryEncoder(7, 1)
-freqRange = 150
 
-def scale(oldValue, oldMin, oldMax, newMin, newMax):
-    return (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin)
-
-def setCentre():
-    global center
-    center = random.range(0 + freqRange, 1000 - freqRange)
      
 
     
