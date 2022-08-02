@@ -2,8 +2,8 @@ import gpiozero as gpio
 import pygame
 import numpy
 import random
-import asyncio
 import time
+import schedule
 
 freqRange = 150
 freq1Pot = gpio.MCP3008(channel=0)
@@ -11,13 +11,20 @@ freq2Pot = gpio.MCP3008(channel=1)
 volPot = gpio.MCP3008(channel=2)
 counter = 0
 
+def count():
+    global counter
+    counter += 1
+    print(counter)
+    if counter > 30:
+        setMiddle()
+        counter = 0
+
 def scale(oldValue, oldMin, oldMax, newMin, newMax):
     return (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin)
 
 def setMiddle():
     global middle
     middle = random.randrange(0, 1000)
-    print(middle)
 
 def preload():
     setMiddle()
@@ -31,8 +38,10 @@ def preload():
 #    pygame.mixer.Sound.play(sample, loops=-1)
 
 preload()
+schedule.every(1).seconds.do(count)
 
 while True:
+    schedule.run_pending()
     freq1 = scale(freq1Pot.value, 0, 1, 0, 1000)
     freq2 = scale(freq2Pot.value, 0, 1, 0, 1000)
     combi = (freq1+freq2) / 2
@@ -41,8 +50,7 @@ while True:
             scaled = scale(combi, middle, middle + freqRange, 1, 0)
         else: scaled = scale(combi, middle, middle - freqRange, 1, 0)
     else: scaled = 0
-    print(scaled)
 #    sample.set_volume(scaled * volPot.value)
     noiseVol = scale(scaled, 0,1,1,0) * volPot.value
     noise.set_volume(noiseVol)
-    time.sleep(0.2)
+    
