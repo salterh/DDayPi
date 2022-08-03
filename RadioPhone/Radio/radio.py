@@ -5,11 +5,14 @@ import random
 import time
 import schedule
 
-freqRange = 150
+freqRange = 200
 freq1Pot = gpio.MCP3008(channel=0)
 freq2Pot = gpio.MCP3008(channel=1)
 volPot = gpio.MCP3008(channel=2)
 counter = 0
+data1 = []
+data2 = []
+dataV = []
 
 def count():
     global counter
@@ -18,6 +21,9 @@ def count():
     if counter > 30:
         setMiddle()
         counter = 0
+        data1 = []
+        data2 = []
+        dataV = []
 
 def scale(oldValue, oldMin, oldMax, newMin, newMax):
     return (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin)
@@ -36,14 +42,26 @@ def preload():
 #    sample = pygame.mixer.Sound("./Audio/sample.wav")
     pygame.mixer.Sound.play(noise, loops=-1)
 #    pygame.mixer.Sound.play(sample, loops=-1)
-
+    
 preload()
 schedule.every(1).seconds.do(count)
 
 while True:
     schedule.run_pending()
-    freq1 = scale(freq1Pot.value, 0, 1, 0, 1000)
-    freq2 = scale(freq2Pot.value, 0, 1, 0, 1000)
+    freq1 = int(scale(freq1Pot.value, 0, 1, 0, 1000))
+    freq2 = int(scale(freq2Pot.value, 0, 1, 0, 1000))
+    volScale = int(scale(volPot.value, 0, 1, 0, 1000))
+    data1.append(freq1)
+    data2.append(freq2)
+    dataV.append(volScale)
+    difference1 = max(data1) - min(data1)
+    difference2 = max(data2) - min(data2)
+    differenceV = max(dataV) - min(dataV)
+    if difference1 > 30 or difference2 > 30 or differenceV > 30:
+        data1 = []
+        data2 = []
+        dataV = []
+        counter = 0
     combi = (freq1+freq2) / 2
     if abs(combi - middle) < freqRange:
         if combi >= middle:
