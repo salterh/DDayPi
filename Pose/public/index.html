@@ -109,10 +109,10 @@
         }
 
         //Needs updating!
-        const URL = "https://teachablemachine.withgoogle.com/models/MDYJWR2mg/";
+        const URL = "./DDay_Pose_Model/";
 
         //Needs updating!
-        var correctAnswer = [0, 0, 0, 0, 0, 0];
+        var correctAnswer = [0, 2, 3];
         trackElement[correctCounter].play();
         //init();
 
@@ -145,6 +145,7 @@
 
         function checkChange() {
             //console.log(checkCounter);
+            console.log(currentPrediction);
             if (currentPrediction !== oldPrediction)
                 checkCounter = 0;
             else {
