@@ -1,6 +1,5 @@
 import gpiozero as gp
 import pygame
-import keyboard as kb
 
 nextB = gp.Button(14)
 prevB = gp.Button(15)
@@ -88,22 +87,15 @@ def playClue():
         pygame.mixer.Sound.play(intros[mainCount])
         currentlyPlaying = mainIntro
 
-    
-    
 nextB.when_pressed = playNext
 prevB.when_pressed = playPrev
 clueB.when_pressed = playClue
 
 while True:
-    if (ledB.is_pressed):
+    if ledB.is_pressed:
         ledOut.on()
     else:
         ledOut.off()
-    event = kb.read_event()
-    if event.event_type == kb.KEY_DOWN:
-        if event.name == 'n':
-            playNext()
-        elif event.name == 'p':
-            playPrev()
-        elif event.name == 'c':
-            playClue()
+
+
+
