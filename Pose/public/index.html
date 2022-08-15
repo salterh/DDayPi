@@ -146,8 +146,7 @@
         function checkChange() {
             //console.log(checkCounter);
             console.log(currentPrediction);
-            if (currentPrediction !== oldPrediction)
-                checkCounter = 0;
+            if (currentPrediction !== oldPrediction) checkCounter = 0;
             else {
                 checkCounter++;
                 if (checkCounter > 3) {
@@ -155,7 +154,6 @@
                         playRandom(engineElement);
                         trackElement[correctCounter].pause();
                         correctCounter++;
-
                         //correctElement[correctCounter].play();
                         console.log("correct!");
                         checkCounter = 0;
@@ -194,7 +192,6 @@
         }
 
         function playRandomDrink() {
-
             console.log("Pouring drink...");
             var randomNumber = Math.floor((Math.random() * 100));
             var randomSound = Math.floor((Math.random() * 4));
