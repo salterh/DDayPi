@@ -1,16 +1,13 @@
-import gpiozero as gpio
-from pydub import AudioSegment
-from pydub.playback import play
-import keyboard as kb
+import gpiozero as gp
+import pygame
 
-#ring = AudioSegment.from_wav('Audio/phoneRing.wav')
-#message = AudioSegment.from_wav('Audio/message.wav')
-#fullMessage = ring + message
+pygame.mixer.init(devicename="snd_rpi_hifiberry_dac Stereo")
+phoneRing = pygame.mixer.Sound("./Audio/phoneRing.ogg")
 
-dialCount = gpio.Button(23)                                                                            
-dialStart = gpio.Button(18)
+dialCount = gp.Button(23)                                                                            
+dialStart = gp.Button(18)
 count = -1
-answer = [1,2,3,4,5,6,7,8,9,0]
+answer = [1,2,3,4,5,6,7,8,9,10]
 playerInput = []
 
 def addCount():
@@ -38,9 +35,6 @@ dialCount.when_released = addCount
 dialStart.when_released = dialRelease
 
 while True:
-    if dialStart.is_held:
-        if dialCount.isPressed:
-            addCount()
     if dialStart.is_pressed:
         print('working')
 

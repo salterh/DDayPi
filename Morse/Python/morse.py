@@ -1,5 +1,4 @@
 import gpiozero as gp
-import keyboard as kb
 import pygame
 import random
 from threading import Timer

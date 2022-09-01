@@ -1,14 +1,13 @@
-import gpiozero as gpio
+import gpiozero as gp
 import pygame
 import numpy
 import random
-import time
 import schedule
 
 freqRange = 200
-freq1Pot = gpio.MCP3008(channel=0)
-freq2Pot = gpio.MCP3008(channel=1)
-volPot = gpio.MCP3008(channel=2)
+freq1Pot = gp.MCP3008(channel=0)
+freq2Pot = gp.MCP3008(channel=1)
+volPot = gp.MCP3008(channel=2)
 counter = 0
 data1 = []
 data2 = []
@@ -36,7 +35,7 @@ def preload():
     setMiddle()
     global noise
     global sample
-    pygame.mixer.init(frequency=44100)
+    pygame.mixer.init(devicename="snd_rpi_hifiberry_dac Stereo")
     noiseList = numpy.random.uniform(-1,1,44100)
     noise = pygame.mixer.Sound(noiseList)
 #    sample = pygame.mixer.Sound("./Audio/sample.wav")
@@ -49,6 +48,7 @@ schedule.every(1).seconds.do(count)
 while True:
     schedule.run_pending()
     freq1 = int(scale(freq1Pot.value, 0, 1, 0, 1000))
+    print(freq1)
     freq2 = int(scale(freq2Pot.value, 0, 1, 0, 1000))
     volScale = int(scale(volPot.value, 0, 1, 0, 1000))
     data1.append(freq1)

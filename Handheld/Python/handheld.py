@@ -3,11 +3,11 @@ import pygame
 
 nextB = gp.Button(14)
 prevB = gp.Button(15)
-clueB = gp.Button(18)
+clueB = gp.Button(25)
 ledB = gp.Button(23)
 ledOut = gp.LED(24)
 
-pygame.init()
+pygame.mixer.init(devicename="snd_rpi_hifiberry_dac Stereo")
 global currentlyPlaying
 
 currentlyPlaying = None
@@ -65,7 +65,6 @@ def playPrev():
         print("Playing main...")
         pygame.mixer.Sound.play(mainIntro)
         currentlyPlaying = mainIntro
-
     else:
         print("Playing puzzle intro: " +str(mainCount))
         pygame.mixer.Sound.play(intros[mainCount])
