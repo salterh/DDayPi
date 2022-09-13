@@ -1,5 +1,6 @@
 import pygame
 import pygame._sdl2.audio as sdl2_audio
+from typing import Tuple
 
 def get_devices(capture_devices: bool = False) -> Tuple[str, ...]:
     init_by_me = not pygame.mixer.get_init()
@@ -10,4 +11,4 @@ def get_devices(capture_devices: bool = False) -> Tuple[str, ...]:
         pygame.mixer.quit()
     return devices
 
-print(get_devices)
+print(get_devices())
