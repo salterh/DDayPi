@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo Attempting to play message
+echo Loading phone puzzle...
 
-aplay message.ogg
-
-SDL_AUDIODRIVER="alsa" AUDIODEV="hw:1,0" ffplay message.ogg
+python3 phoneInput.py
