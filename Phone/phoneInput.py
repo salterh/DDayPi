@@ -6,8 +6,6 @@ dialStart = gp.Button(24)
 count = -1
 answer = [1,1,1]
 playerInput = []
-##sp.call("puredata -nogui -audioaddoutdev \"snd_rpi_hifiberry_dac\" playSound.pd", shell=True)
-
 
 def addCount():
     global count
