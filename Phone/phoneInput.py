@@ -1,10 +1,7 @@
 import gpiozero as gp
-import pygame
+import subprocess
 
-pygame.init()
-pygame.mixer.init(devicename="snd_rpi_hifiberry_dac Stereo")
-pygame.mixer.music.load("message.wav")
-pygame.mixer.music.play()
+subprocess.call("puredata -nogui -audioaddoutdev \"snd_rpi_hifiberry_dac\" playSound.pd", shell=True)
 
 dialCount = gp.Button(23)                                                                            
 dialStart = gp.Button(18)
@@ -17,18 +14,19 @@ def addCount():
     count+=1
     
 def dialRelease():
+    global data
     global count
     global playerInput
     if count >= 10:
         count = 0
     playerInput.append(count)
-    print(playerInput)
     count = -1
     if len(playerInput) == len(answer):
         if playerInput == answer:
-            playsound("message.wav")
+            print("Done")
+            subprocess.call("puredata -nogui -audioaddoutdev \"snd_rpi_hifiberry_dac\" playSound.pd", shell=True)
         else:
-            print('Try again')
+            print("Try again")
         playerInput = []
 
 dialCount.when_released = addCount
@@ -36,4 +34,5 @@ dialStart.when_released = dialRelease
 
 while True:
     pass
+
 
