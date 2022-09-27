@@ -1,5 +1,8 @@
 import gpiozero as gp
 import subprocess as sp
+from oscpy.client import OSCClient as oscC
+
+osc = oscC("127.0.0.1", 8000)
 
 dialCount = gp.Button(25)                                                                            
 dialStart = gp.Button(24)
@@ -21,9 +24,10 @@ def dialRelease():
     count = -1
     if len(playerInput) == len(answer):
         if playerInput == answer:
-            print("Done")
-            sp.call("puredata -nogui -audioaddoutdev \"snd_rpi_hifiberry_dac\" playSound.pd", shell=True)
+            osc.send_message(b"/correct", b"bang")
+            print("Well done")
         else:
+            osc.send_message(b"incorrect", b"bang")
             print("Try again")
         playerInput = []
 
