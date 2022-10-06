@@ -1,74 +1,84 @@
 import gpiozero as gp
-import pygame
-import numpy
+import subprocess as sp
 import random
 import schedule
-
-freqRange = 200
-freq1Pot = gp.MCP3008(channel=0)
-freq2Pot = gp.MCP3008(channel=1)
-volPot = gp.MCP3008(channel=2)
-counter = 0
-data1 = []
-data2 = []
-dataV = []
+from oscpy.client import OSCClient as oscC
 
 def count():
     global counter
     counter += 1
-    print(counter)
     if counter > 30:
-        setMiddle()
         counter = 0
-        data1 = []
-        data2 = []
-        dataV = []
-
+        dataOne   = []
+        dataTwo   = []
+        dataVol   = []
+        set_middle()
+        
+    print(counter)
+    
 def scale(oldValue, oldMin, oldMax, newMin, newMax):
     return (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin)
 
-def setMiddle():
-    global middle
-    middle = random.randrange(0, 1000)
+def set_middle():
+    middleOne = random.randrange(0, 1000)
+    middleTwo = random.randrange(0, 1000)
 
-def preload():
-    setMiddle()
-    global noise
-    global sample
-    pygame.mixer.init(devicename="snd_rpi_hifiberry_dac Stereo")
-    noiseList = numpy.random.uniform(-1,1,44100)
-    noise = pygame.mixer.Sound(noiseList)
-#    sample = pygame.mixer.Sound("./Audio/sample.wav")
-    pygame.mixer.Sound.play(noise, loops=-1)
-#    pygame.mixer.Sound.play(sample, loops=-1)
+def check_if_dials_changed(pot1, pot2, pot3):
+    dataOne.append(pot1)
+    dataTwo.append(pot2)
+    dataVol.append(pot3)
     
-preload()
+    differenceOne = max(dataOne) - min(dataOne)
+    differenceTwo = max(dataTwo) - min(dataTwo)
+    differenceVol = max(dataVol) - min(dataVol)
+    
+    if differenceOne > 30 and differenceTwo > 30 and differenceVol > 30:
+        counter = 0
+        
+def calculate_dial_distance_from_middle(num, middle, range):
+    if abs(num - middle) > range:
+        return 0
+    else:
+        return scale(num - middle, 0, range, 1, 0)
+
+
+freqRange = 150
+middleOne = 250
+middleTwo = 750
+
+freq1Pot  = gp.MCP3008(channel=1)
+freq2Pot  = gp.MCP3008(channel=2)
+volPot    = gp.MCP3008(channel=3)
+
+counter   = 0
+dataOne   = []
+dataTwo   = []
+dataVol   = []
+
+set_middle()
 schedule.every(1).seconds.do(count)
+
+osc = oscC("127.0.0.1", 8000)
+osc.send_message(b"/noiseVol", [1])
+osc.send_message(b"/sampleVol", [0])
 
 while True:
     schedule.run_pending()
-    freq1 = int(scale(freq1Pot.value, 0, 1, 0, 1000))
-    print(freq1)
-    freq2 = int(scale(freq2Pot.value, 0, 1, 0, 1000))
-    volScale = int(scale(volPot.value, 0, 1, 0, 1000))
-    data1.append(freq1)
-    data2.append(freq2)
-    dataV.append(volScale)
-    difference1 = max(data1) - min(data1)
-    difference2 = max(data2) - min(data2)
-    differenceV = max(dataV) - min(dataV)
-    if difference1 > 30 or difference2 > 30 or differenceV > 30:
-        data1 = []
-        data2 = []
-        dataV = []
-        counter = 0
-    combi = (freq1+freq2) / 2
-    if abs(combi - middle) < freqRange:
-        if combi >= middle:
-            scaled = scale(combi, middle, middle + freqRange, 1, 0)
-        else: scaled = scale(combi, middle, middle - freqRange, 1, 0)
-    else: scaled = 0
-#    sample.set_volume(scaled * volPot.value)
-    noiseVol = scale(scaled, 0,1,1,0) * volPot.value
-    noise.set_volume(noiseVol)
+    
+    freq1Scaled = freq1Pot.value * 1000
+    freq2Scaled = freq2Pot.value * 1000
+    volScaled   = volPot.value * 1000
+    
+    check_if_dials_changed(freq1Scaled, freq2Scaled, volScaled)
+    freqOne = calculate_dial_distance_from_middle(freq1Scaled, middleOne, freqRange)
+    freqTwo = calculate_dial_distance_from_middle(freq2Scaled, middleTwo, freqRange)
+    
+    sampleVol = ((freqOne / 1000) + (freqTwo / 1000)) / 2
+    #print(sampleVol)
+    osc.send_message(b"/sampleVol", [sampleVol])
+    
+    noiseVol = scale(sampleVol, 0, 1, 1, 0)
+    #print(noiseVol)
+    osc.send_message(b"/noiseVol", [noiseVol])
+    
     
