@@ -74,10 +74,10 @@ while True:
     
     sampleVol = (freqOne + freqTwo) / 2
     
-    print(freqOne, freqTwo, sampleVol)
     osc.send_message(b"/sampleVol", [sampleVol])
     noiseVol = scale(sampleVol, 0, 1, 1, 0)
     osc.send_message(b"/noiseVol", [noiseVol])
     osc.send_message(b"/mainVol", [volPot.value])
+    print(sampleVol, noiseVol, volPot.value)
     
     
