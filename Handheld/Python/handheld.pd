@@ -28,6 +28,7 @@
 #X msg 108 254 read -resize ./Audio/NCClue0.wav ncclue0;
 #X msg 98 234 read -resize ./Audio/MOClue0.wav moclue0;
 #X obj 28 32 delay 5000;
+#X obj 28 10 loadbang;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
 #X connect 3 0 0 0;
@@ -50,6 +51,7 @@
 #X connect 23 0 21 0;
 #X connect 23 0 13 0;
 #X connect 23 0 20 0;
+#X connect 24 0 23 0;
 #X restore 7 7 pd load_sounds;
 #X obj 98 7 loadbang;
 #X floatatom 98 142 5 0 0 0 - - -;
