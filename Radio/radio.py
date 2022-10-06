@@ -13,8 +13,6 @@ def count():
         dataTwo   = []
         dataVol   = []
         set_middle()
-        
-    print(counter)
     
 def scale(oldValue, oldMin, oldMax, newMin, newMax):
     return (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin)
@@ -36,13 +34,16 @@ def check_if_dials_changed(pot1, pot2, pot3):
         counter = 0
         
 def calculate_dial_distance_from_middle(num, middle, range):
-    if abs(num - middle) > range:
-        return 0
+    if num < (middle + range) and num > (middle - range):
+        if num < middle:
+            return scale(num, middle - range, middle, 0, 1)
+        elif num > middle:
+            return scale(num, middle, middle + range, 1, 0)
     else:
-        return scale(num - middle, 0, range, 1, 0)
+        return 0
 
 
-freqRange = 150
+freqRange = 500
 middleOne = 250
 middleTwo = 750
 
@@ -59,26 +60,24 @@ set_middle()
 schedule.every(1).seconds.do(count)
 
 osc = oscC("127.0.0.1", 8000)
-osc.send_message(b"/noiseVol", [1])
-osc.send_message(b"/sampleVol", [0])
+
 
 while True:
     schedule.run_pending()
     
     freq1Scaled = freq1Pot.value * 1000
     freq2Scaled = freq2Pot.value * 1000
-    volScaled   = volPot.value * 1000
     
-    check_if_dials_changed(freq1Scaled, freq2Scaled, volScaled)
+    check_if_dials_changed(freq1Scaled, freq2Scaled, volPot.value)
     freqOne = calculate_dial_distance_from_middle(freq1Scaled, middleOne, freqRange)
     freqTwo = calculate_dial_distance_from_middle(freq2Scaled, middleTwo, freqRange)
     
-    sampleVol = ((freqOne / 1000) + (freqTwo / 1000)) / 2
-    #print(sampleVol)
-    osc.send_message(b"/sampleVol", [sampleVol])
+    sampleVol = (freqOne + freqTwo) / 2
     
+    print(freqOne, freqTwo, sampleVol)
+    osc.send_message(b"/sampleVol", [sampleVol])
     noiseVol = scale(sampleVol, 0, 1, 1, 0)
-    #print(noiseVol)
     osc.send_message(b"/noiseVol", [noiseVol])
+    osc.send_message(b"/mainVol", [volPot.value])
     
     
