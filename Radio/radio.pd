@@ -1,4 +1,4 @@
-#N canvas 785 177 962 587 10;
+#N canvas 262 186 962 587 10;
 #X msg 88 72 read -resize message.wav message;
 #X obj 88 94 soundfiler;
 #N canvas 0 50 450 250 (subpatch) 0;
@@ -14,7 +14,7 @@
 #X floatatom 356 210 5 0 0 0 - - -;
 #X obj 208 161 noise~;
 #X obj 208 247 *~ 0.5;
-#X obj 139 323 dac~;
+#X obj 79 323 dac~;
 #X obj 79 161 tabplay~ message;
 #X obj 79 248 *~ 0.5;
 #X obj 79 139 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
@@ -27,7 +27,7 @@
 #X obj 293 162 route sampleVol noiseVol mainVol;
 #X obj 419 185 clip 0 1;
 #X floatatom 419 210 5 0 0 0 - - -;
-#X obj 138 291 *~ 0.5;
+#X obj 78 291 *~ 0.5;
 #X obj 208 184 lop~ 100;
 #X connect 0 0 1 0;
 #X connect 4 0 5 0;

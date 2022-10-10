@@ -20,6 +20,7 @@ def scale(oldValue, oldMin, oldMax, newMin, newMax):
 def set_middle():
     middleOne = random.randrange(0, 1000)
     middleTwo = random.randrange(0, 1000)
+    print(middleOne, middleTwo)
 
 def check_if_dials_changed(pot1, pot2, pot3):
     dataOne.append(pot1)
@@ -64,7 +65,7 @@ osc = oscC("127.0.0.1", 8000)
 
 while True:
     schedule.run_pending()
-    
+    print(freq1Pot.value, freq2Pot.value, volPot.value)
     freq1Scaled = freq1Pot.value * 1000
     freq2Scaled = freq2Pot.value * 1000
     
@@ -78,6 +79,5 @@ while True:
     noiseVol = scale(sampleVol, 0, 1, 1, 0)
     osc.send_message(b"/noiseVol", [noiseVol])
     osc.send_message(b"/mainVol", [volPot.value])
-    print(sampleVol, noiseVol, volPot.value)
     
     
