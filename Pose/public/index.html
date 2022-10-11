@@ -20,6 +20,10 @@
         var correctSamples = [], incorrectSamples = [], dialogSamples = [], drinkPSamples = [], drinkTSamples = [], glassSamples = [], trackSamples = [], engineSamples = [];
 
         const finalSampleElement = document.getElementById("finalSample");
+        finalSampleElement.addEventListener("ended", () => {
+            isComplete = false;
+            trackElement[correctCounter].play();
+        })
         const finalSample = audiocontext.createMediaElementSource(finalSampleElement);
 
         const finalGain = audiocontext.createGain();
@@ -64,7 +68,8 @@
             engineElement[i].src = "./Audio/engine" + i + ".wav";
             engineElement[i].addEventListener("ended", () => {
                 musicGain.gain.linearRampToValueAtTime(1.0, audiocontext.currentTime);
-                trackElement[correctCounter].play();
+                if (!isComplete)
+                    trackElement[correctCounter].play();
             });
             engineSamples[i] = audiocontext.createMediaElementSource(engineElement[i]);
             engineSamples[i].connect(musicGain);
@@ -184,7 +189,7 @@
             if (!isComplete && correctCounter < 2) {
                 var randomNumber = Math.floor((Math.random() * 100) + 1);
                 var randomSound = Math.floor((Math.random() * dialogElement.length));
-                if (randomNumber < 100) {
+                if (randomNumber < 75) {
                     dialogElement[randomSound].play();
                 }
             }
@@ -193,7 +198,6 @@
 
         function playRandomDrink() {
             console.log("Pouring drink...");
-            var randomNumber = Math.floor((Math.random() * 100));
             var randomSound = Math.floor((Math.random() * 4));
             drinkPElement[randomSound].play();
         }
@@ -220,6 +224,7 @@
             currentPrediction = Object.keys(prediction).reduce(function (a, b) {
                 return (parseFloat(prediction[a].probability.toFixed(2)) > parseFloat(prediction[b].probability.toFixed(2)) ? a : b);
             });
+            console.log(currentPrediction);
             drawPose(pose);
         }
 
