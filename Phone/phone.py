@@ -7,7 +7,7 @@ osc = oscC("127.0.0.1", 8000)
 dialCount = gp.Button(25)                                                                            
 dialStart = gp.Button(24)
 count = -1
-answer = [1,1,1]
+answer = [1,1,1,0,2,0,2,2]
 playerInput = []
 
 def addCount():
@@ -27,7 +27,7 @@ def dialRelease():
             osc.send_message(b"/correct", b"bang")
             print("Well done")
         else:
-            osc.send_message(b"incorrect", b"bang")
+            osc.send_message(b"/incorrect", b"bang")
             print("Try again")
         playerInput = []
 
