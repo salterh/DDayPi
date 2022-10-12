@@ -53,16 +53,6 @@
         var isComplete = false;
 
         for (let i = 0; i < 3; i++) {
-            //Debugging
-            // correctElement[i] = document.createElement("audio");
-            // correctElement[i].src = "./Audio/correctSample" + i + ".wav";
-            // correctSamples[i] = audiocontext.createMediaElementSource(correctElement[i]);
-            // correctSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
-            // incorrectElement[i] = document.createElement("audio");
-            // incorrectElement[i].src = "./Audio/incorrectSample" + i + ".wav";
-            // incorrectSamples[i] = audiocontext.createMediaElementSource(incorrectElement[i]);
-            // incorrectSamples[i].connect(triggeredSamplesGain).connect(audiocontext.destination);
-
             //Engine Sounds
             engineElement[i] = document.createElement("audio");
             engineElement[i].src = "./Audio/engine" + i + ".wav";
@@ -133,7 +123,6 @@
             webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
             await webcam.setup(); // request access to the webcam
             await webcam.play();
-            console.log(webcam);
             window.requestAnimationFrame(loop);
 
             const canvas = document.getElementById("canvas");
@@ -143,14 +132,12 @@
             for (let i = 0; i < maxPredictions; i++) { // and class labels
                 labelContainer.appendChild(document.createElement("div"));
             }
-            checkTimer = setInterval(checkChange, 500);
+            checkTimer = setInterval(checkChange, 300);
             dialogTimer = setTimeout(playRandomDialog, Math.floor((Math.random() * 10000) + 5000));
             drinkTimer = setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 5000))
         }
 
         function checkChange() {
-            //console.log(checkCounter);
-            console.log(currentPrediction);
             if (currentPrediction !== oldPrediction) checkCounter = 0;
             else {
                 checkCounter++;
@@ -159,16 +146,11 @@
                         playRandom(engineElement);
                         trackElement[correctCounter].pause();
                         correctCounter++;
-                        //correctElement[correctCounter].play();
-                        console.log("correct!");
                         checkCounter = 0;
                     }
                     else {
-                        console.log("incorrect");
-                        //incorrectElement[correctCounter].play();
                         checkCounter = 0;
                     }
-                    console.log(correctCounter, "/", correctAnswer.length);
                 }
             }
             if (correctCounter >= correctAnswer.length) {
@@ -180,7 +162,6 @@
                 correctCounter = 0;
                 checkCounter = 0;
                 clearInterval(checkTimer);
-                console.log("Well done");
             }
             oldPrediction = currentPrediction;
         }
@@ -197,7 +178,6 @@
         }
 
         function playRandomDrink() {
-            console.log("Pouring drink...");
             var randomSound = Math.floor((Math.random() * 4));
             drinkPElement[randomSound].play();
         }
@@ -224,7 +204,6 @@
             currentPrediction = Object.keys(prediction).reduce(function (a, b) {
                 return (parseFloat(prediction[a].probability.toFixed(2)) > parseFloat(prediction[b].probability.toFixed(2)) ? a : b);
             });
-            console.log(currentPrediction);
             drawPose(pose);
         }
 
@@ -243,7 +222,6 @@
         function playRandom(arr) {
             let random = Math.floor(Math.random() * arr.length);
             arr[random].play();
-            console.log(arr[random]);
         }
     </script>
 </body>
