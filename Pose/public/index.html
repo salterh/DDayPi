@@ -6,8 +6,6 @@
 </head>
 
 <body>
-    <div>Teachable Machine Pose Model</div>
-    <button type="button" onclick="init()">Click me</button>
     <div><canvas id="canvas"></canvas></div>
     <div id="label-container"></div>
     <script src="./lib/tf.min.js"></script>
@@ -109,7 +107,7 @@
         //Needs updating!
         var correctAnswer = [0, 2, 3];
         trackElement[correctCounter].play();
-        //init();
+        init();
 
         async function init() {
             backgroundSampleElement.play();
