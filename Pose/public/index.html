@@ -8,6 +8,7 @@
 <body>
     <div><canvas id="canvas"></canvas></div>
     <div id="label-container"></div>
+    <input type="button" value="progress" onclick="progress()">
     <script src="./lib/tf.min.js"></script>
     <script src="./lib/tm-pose-min.js"></script>
     <audio src="./Audio/barMan.wav" id="finalSample" onended="reset()"></audio>
@@ -61,13 +62,6 @@
             });
             engineSamples[i] = audiocontext.createMediaElementSource(engineElement[i]);
             engineSamples[i].connect(musicGain);
-
-            //Music
-            trackElement[i] = document.createElement("audio");
-            trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
-            trackElement[i].loop = true;
-            trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
-            trackSamples[i].connect(musicGain);
         }
 
         for (let i = 0; i < 4; i++) {
@@ -101,11 +95,20 @@
             glassSamples[i].connect(backgroundGain);
         }
 
+        for (let i = 0; i < 6; i++) {
+            //Music
+            trackElement[i] = document.createElement("audio");
+            trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
+            trackElement[i].loop = true;
+            trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
+            trackSamples[i].connect(musicGain);
+        }
+
         //Needs updating!
         const URL = "./DDay_Pose_Model/";
 
         //Needs updating!
-        var correctAnswer = [0, 2, 3];
+        var correctAnswer = [0, 2, 3, 4, 5, 1];
         trackElement[correctCounter].play();
         init();
 
@@ -133,6 +136,13 @@
             checkTimer = setInterval(checkChange, 300);
             dialogTimer = setTimeout(playRandomDialog, Math.floor((Math.random() * 10000) + 5000));
             drinkTimer = setTimeout(playRandomDrink, Math.floor((Math.random() * 5000) + 5000))
+        }
+
+        function progress() {
+            playRandom(engineElement);
+            trackElement[correctCounter].pause();
+            correctCounter++;
+            checkCounter = 0;
         }
 
         function checkChange() {
