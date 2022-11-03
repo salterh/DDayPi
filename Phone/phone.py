@@ -14,8 +14,10 @@ time_count = 0
 
 def addCount():
     global count
+    global time_count
     count+=1
     time_count = 0
+    print("Count: ", count)
     
 def dialRelease():
     global count
@@ -26,21 +28,22 @@ def dialRelease():
     playerInput.append(count)
     print(playerInput)
     count = -1
+    osc.send_message(b"/test", playerInput)
     if len(playerInput) == len(answer):
         if playerInput == answer:
             osc.send_message(b"/correct", b"bang")
-            print("Well done")
         else:
             osc.send_message(b"/incorrect", b"bang")
-            print("Try again")
         playerInput = []
+    
         
 def check():
+    global time_count
+    global playerInput
     time_count += 1
     if time_count > 30:
         playerInput = []
         time_count = 0
-    print(time_count)
 
 dialCount.when_released = addCount
 dialStart.when_released = dialRelease
