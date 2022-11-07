@@ -8,7 +8,7 @@ osc = oscC("127.0.0.1", 8000)
 dialCount = gp.Button(25)                                                                            
 dialStart = gp.Button(24)
 count = -1
-answer = [1,2,3]
+answer = [1,2,1,1,1,9,6,9]
 playerInput = []
 time_count = 0
 
@@ -23,6 +23,10 @@ def dialRelease():
     global count
     global playerInput
     time_count = 0
+    if count == answer[len(playerInput)] + 1:
+        count = answer[len(playerInput)]
+    elif count == answer[len(playerInput)] - 1:
+        count = answer[len(playerInput)]
     if count >= 10:
         count = 0
     playerInput.append(count)
@@ -42,6 +46,7 @@ def check():
     global playerInput
     time_count += 1
     if time_count > 30:
+        osc.send_message(b"/reset", b"bang")
         playerInput = []
         time_count = 0
 
