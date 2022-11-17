@@ -93,22 +93,21 @@
             });
             glassSamples[i] = audiocontext.createMediaElementSource(glassElement[i]);
             glassSamples[i].connect(backgroundGain);
-        }
 
-        for (let i = 0; i < 6; i++) {
             //Music
             trackElement[i] = document.createElement("audio");
             trackElement[i].src = "./Audio/Music/Track" + i + ".wav";
             trackElement[i].loop = true;
             trackSamples[i] = audiocontext.createMediaElementSource(trackElement[i]);
             trackSamples[i].connect(musicGain);
+            console.log(trackElement[i]);
         }
 
         //Needs updating!
         const URL = "./DDay_Pose_Model/";
 
         //Needs updating!
-        var correctAnswer = [0, 2, 3, 4, 5, 1];
+        var correctAnswer = [0, 2, 3, 1];
         trackElement[correctCounter].play();
         init();
 
@@ -142,6 +141,7 @@
             playRandom(engineElement);
             trackElement[correctCounter].pause();
             correctCounter++;
+            console.log(correctCounter);
             checkCounter = 0;
         }
 
