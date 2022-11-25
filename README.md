@@ -31,11 +31,11 @@ This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian
 	sudo nano /etc/xdg/autostart/<morse>.desktop
 	
 	- Copy and paste the following:
-	[Desktop Entry]
-	Type=Application
-	Exec=sudo bash /home/pi/DDayPi/Morse/morse.sh
-	StartupNotify=false
-	Terminal=false
+		[Desktop Entry]
+		Type=Application
+		Exec=sudo bash /home/pi/DDayPi/Morse/morse.sh
+		StartupNotify=false
+		Terminal=false
 
 	- Ctrl + S, then Ctrl + X to save and exit.
 
