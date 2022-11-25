@@ -4,28 +4,68 @@
 
 An interactive timeloop soundscape which presents aural opportunities for participants to find clues and answer questions in interesting ways. Participants should listen closely to audio clues and pay attention to their surroundings to answer questions which meaningfully change the soundscape. Players must discover why this ship has become cursed; one of the ships builders dropped a locket in the engine.
 
-### Puzzles
+## Raspberry Pi Setup
+This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian) Bullseye. If you have not done this, you can find instructions [here](https://www.raspberrypi.com/software/).
 
-#### Handheld
+- Open the Command Line Interface (CLI) and type in:
+- sudo date --set='<year month day hour:minute>' && reboot
+	e.g. sudo date --set='20221125 10:51' && reboot
 
-A small, 3D printed device that has a small speaker, 4 buttons, and a UV LED. A morse code guide will be etched into the side.
-The "Next" button will play the next audio file.
-The "Prev" button will play the previous audio file.
-The "Clue" button will play a clue depending on which audio file was last played.
-The "Light" button will activate the UV LED.
+- Connect to WiFi. 
 
-#### Landing Bay
+- Open the CLI and type in:
+- sudo apt update
+- sudo apt upgrade
+- sudo apt install puredata
+- pip3 install schedule
+- pip3 install oscpy
+- git clone https://github.com/pimoroni/pirate-audio 
+  cd pirate-audio/mopidy
+  sudo ./install.sh
+- cd
+- git clone https://github.com/salterh/DDayPi.git
 
-An LED strip will be visible from the landing bay, and will be flashing more code for "engine". 
+- Depending on what code you want to run on boot, the absolute paths will change. These changes are marked with <>, and this example will use the Morse puzzle.
+- Open the CLI and type in:
+	cd
+	sudo nano /etc/xdg/autostart/<morse>.desktop
+	
+	- Copy and paste the following:
+	[Desktop Entry]
+	Type=Application
+	Exec=sudo bash /home/pi/DDayPi/Morse/morse.sh
+	StartupNotify=false
+	Terminal=false
 
-#### Engine Room
+	- Ctrl + S, then Ctrl + X to save and exit.
 
-This room will be dressed up to look more like a bar and dance floor. The lights will be covered with coloured acetate sheets. A makeshift bar will be installed over some of the controls already installed. On the bar, there will be posters which showcase lyrics to songs that will be playing. Each of the posters have a pose on them; players will have to match the pose on the poster that is matching the song currently playing.
+- Reboot and test
 
-#### Helm & Captain's Quarters
+- Occassionally, for programs that run Puredata, it will fail to open from the bash scripts (Unsure why; the error message are unhelpful). 
+- In this case, you should make two seperate .desktop files; one to launch the Puredata patch and another to launch the python3 script.
+- Open the CLI and type in:
+	cd
+	sudo nano /etc/xdg/autostart/<handheld>.desktop
 
-There will be a radio which is playing white noise. The players should change the frequencies until they hear a voice, which will tell them a series of paragraphs, letters, and words. In the Captain's Quarters there will be a letter. The players should identify the words: "call the date". The players will go to the rotary phone, input the date on the letter, which will reveal that a locket was lost.
+	- Copy and paste the following:
+	[Desktop Entry]
+	Type=Application
+	Exec=puredata -nogui -audioaddoutdev "snd_rpi_hifiberry_dac" /home/pi/DDayPi/Handheld/handheld.pd
+	StartupNotify=false
+	Terminal=false
 
-#### Upper Deck
+	- Ctrl + S, then Ctrl + X to save and exit.
 
-A map showing the UK will be visible inside a picture frame. Nearby is also a grid of flags. This grid will match a laminated grid that the players are given. Using a UV LED on the map will show coordinates, which will reveal, when used in conjunction with the grids, the location where the ship was built.
+	cd
+	sudo nano/etc/xdg/autostart/<handheldPy>.desktop
+	
+	- Copy and paste the following: 
+	[Desktop Entry]
+	Type=Application
+	Exec=python3 /home/pi/DDayPi/Handheld/handheld.py
+	StartupNotify=false
+	Terminal=false
+
+	- Ctrl + S, then Ctrl + X to save and exit.
+
+- Reboot and test
