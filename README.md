@@ -2,7 +2,7 @@
 
 ## Spec 
 
-An interactive timeloop soundscape which presents aural opportunities for participants to find clues and answer questions in interesting ways. Participants should listen closely to audio clues and pay attention to their surroundings to answer questions which meaningfully change the soundscape. Players must discover why this ship has become cursed; one of the ships builders dropped a locket in the engine.
+An interactive escape room experience in where users must listen closely to their surroundings and handheld device for clues. Uses Raspberry Pis and connected circuits as the main interactive element.
 
 ## Raspberry Pi Setup
 This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian) Bullseye. If you have not done this, you can find instructions [here](https://www.raspberrypi.com/software/).
