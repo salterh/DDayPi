@@ -31,11 +31,11 @@ This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian
 	sudo nano /etc/xdg/autostart/<morse>.desktop
 	
 	- Copy and paste the following:
-		-[Desktop Entry]
-		-Type=Application
-		-Exec=sudo bash /home/pi/DDayPi/Morse/morse.sh
-		-StartupNotify=false
-		-Terminal=false
+		- [Desktop Entry]
+		- Type=Application
+		- Exec=sudo bash /home/pi/DDayPi/Morse/morse.sh
+		- StartupNotify=false
+		- Terminal=false
 
 	- Ctrl + S, then Ctrl + X to save and exit.
 
@@ -48,11 +48,11 @@ This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian
 	sudo nano /etc/xdg/autostart/<handheld>.desktop
 
 	- Copy and paste the following:
-		-[Desktop Entry]
-		-Type=Application
-		-Exec=puredata -nogui -audioaddoutdev "snd_rpi_hifiberry_dac" /home/pi/DDayPi/Handheld/handheld.pd
-		-StartupNotify=false
-		-Terminal=false
+		- [Desktop Entry]
+		- Type=Application
+		- Exec=puredata -nogui -audioaddoutdev "snd_rpi_hifiberry_dac" /home/pi/DDayPi/Handheld/handheld.pd
+		- StartupNotify=false
+		- Terminal=false
 
 	- Ctrl + S, then Ctrl + X to save and exit.
 
@@ -60,11 +60,11 @@ This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian
 	sudo nano/etc/xdg/autostart/<handheldPy>.desktop
 	
 	- Copy and paste the following: 
-		-[Desktop Entry]
-		-Type=Application
-		-Exec=python3 /home/pi/DDayPi/Handheld/handheld.py
-		-StartupNotify=false
-		-Terminal=false
+		- [Desktop Entry]
+		- Type=Application
+		- Exec=python3 /home/pi/DDayPi/Handheld/handheld.py
+		- StartupNotify=false
+		- Terminal=false
 
 	- Ctrl + S, then Ctrl + X to save and exit.
 
