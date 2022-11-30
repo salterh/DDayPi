@@ -8,7 +8,7 @@ An interactive escape room experience in where users must listen closely to thei
 This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian) Bullseye. If you have not done this, you can find instructions [here](https://www.raspberrypi.com/software/).
 
 - Open the Command Line Interface (CLI) and type in:
-- sudo date --set='<year month day hour:minute>' && reboot
+- sudo date --set='yearmonthday hour:minute' && reboot
 	- e.g. sudo date --set='20221125 10:51' && reboot
 
 - Connect to WiFi. 
