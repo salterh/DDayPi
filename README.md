@@ -9,7 +9,7 @@ This guide assumes you have a fresh install of Raspberry Pi (previously Raspbian
 
 - Open the Command Line Interface (CLI) and type in:
 - sudo date --set='<year month day hour:minute>' && reboot
-	e.g. sudo date --set='20221125 10:51' && reboot
+	- e.g. sudo date --set='20221125 10:51' && reboot
 
 - Connect to WiFi. 
 
